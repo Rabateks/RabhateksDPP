@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rabateks - Fabric Sustainability Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #005530;
+            --primary-light: #007040;
+            --secondary: #0A1D3D;
+            --navy: #02154e;
+            --accent: #f9ba00;
+            --accent-light: #ffd04d;
+            --light: #f8f9fa;
+            --medium: #e9ecef;
+            --dark: #333;
+            --danger: #D51635;
+            --success: #28a745;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 25px;
+        }
+        
+        header {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 25px 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--secondary);
+            background: white;
+            color: black;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-container {
+            flex-shrink: 0;
+        }
+        
+        .logo-container svg {
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+        
+        .company-name {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .rabateks-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #005530;
+            font-family: serif;
+            font-style: italic;
+            letter-spacing: 1px;
+        }
+        
+        .title-section {
+            flex: 1;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #02154e;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: var(--dark);
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+        
+        /* Fabric Calculator Styles - Main area */
+        .fabric-calculator-main {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--medium);
+            margin-bottom: 25px;
+            grid-column: 1 / -1;
+        }
+        
+        .fabric-calculator-main .calculator-header {
+            background: var(--accent);
+            color: white;
+            padding: 18px 25px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .fabric-calculator-main .calculator-header i {
+            margin-right: 12px;
+            font-size: 1.6rem;
+        }
+        
+        .fabric-calculator-main .calculator-body {
+            padding: 25px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 25px;
+        }
+        
+        .fabric-inputs-container {
+            /* First column - inputs */
+        }
+        
+        .fabric-inputs-header {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 1rem;
+            padding: 0 5px;
+        }
+        
+        .fabric-row {
+            margin-bottom: 15px;
+        }
+        
+        .fabric-row label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 0.95rem;
+        }
+        
+        .fabric-row select,
+        .fabric-row input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--medium);
+            border-radius: 8px;
+            background: white;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        
+        .fabric-row select:focus,
+        .fabric-row input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 85, 48, 0.1);
+        }
+        
+        .yarn-selections {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 85, 48, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(0, 85, 48, 0.2);
+        }
+        
+        .yarn-selections h4 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .yarn-selections h4:before {
+            content: "🧵";
+            margin-right: 8px;
+        }
+        
+        .yarn-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+            align-items: end;
+        }
+        
+        .fabric-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .fabric-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .fabric-btn.calculate {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .fabric-btn.reset {
+            background: var(--light);
+            color: var(--dark);
+            border: 1px solid var(--medium);
+        }
+        
+        .fabric-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Save Fabric Section */
+        .fabric-save-section {
+            margin-top: 0;
+            padding: 20px;
+            background: rgba(0, 85, 48, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 85, 48, 0.2);
+            height: fit-content;
+        }
+        
+        .fabric-name-input {
+            margin-bottom: 15px;
+        }
+        
+        .fabric-name-input label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 0.95rem;
+        }
+        
+        .fabric-name-input input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--medium);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .fabric-name-input input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 85, 48, 0.1);
+        }
+        
+        .fabric-btn.save {
+            background: var(--primary);
+            color: white;
+            width: 100%;
+        }
+        
+        .fabric-btn.save:hover {
+            background: var(--primary-light);
+        }
+        
+        /* Fabric Results */
+        .fabric-results {
+            margin-top: 0;
+        }
+        
+        .fabric-result-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--accent);
+        }
+        
+        .fabric-result-header {
+            background: var(--accent);
+            color: white;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .fabric-result-type {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .fabric-result-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .fabric-result-origin {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        
+        .fabric-result-body {
+            padding: 20px;
+        }
+        
+        .fabric-result-structure {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .fabric-composition {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(249, 186, 0, 0.08);
+            border-radius: 8px;
+            border: 1px solid rgba(249, 186, 0, 0.2);
+        }
+        
+        .composition-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .composition-title:before {
+            content: "🧵";
+            margin-right: 8px;
+        }
+        
+        .composition-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .composition-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 6px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .composition-yarn-name {
+            font-weight: 500;
+            color: var(--secondary);
+        }
+        
+        .composition-percentage {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 1.1rem;
+        }
+        
+        .fabric-result-metrics {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .fabric-result-metric {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            flex: 1;
+            margin: 0 5px;
+            background: rgba(249, 186, 0, 0.1);
+            border: 1px solid rgba(249, 186, 0, 0.3);
+        }
+        
+        .fabric-result-metric-title {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            color: #6c757d;
+        }
+        
+        .fabric-result-metric-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .fabric-result-score-bar {
+            height: 8px;
+            background: var(--medium);
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .fabric-result-score-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 4px;
+        }
+        
+        .fabric-result-footer {
+            padding: 15px 20px;
+            background: rgba(249, 186, 0, 0.05);
+            border-top: 1px solid rgba(249, 186, 0, 0.2);
+            text-align: center;
+            color: var(--secondary);
+            font-weight: 500;
+        }
+        
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            height: fit-content;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .search-box {
+            margin-bottom: 0;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 2px solid var(--medium);
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 85, 48, 0.2);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+        
+        .category-filter {
+            margin-bottom: 0;
+        }
+        
+        .category-title {
+            font-size: 1.2rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--medium);
+            display: flex;
+            align-items: center;
+        }
+        
+        .category-title i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        
+        .category-list {
+            list-style: none;
+        }
+        
+        .category-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .category-item:hover {
+            background: rgba(0, 85, 48, 0.05);
+        }
+        
+        .category-item.active {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .category-count {
+            background: var(--medium);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .active .category-count {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .main-content {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+        }
+        
+        .filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--medium);
+        }
+        
+        .results-info {
+            font-size: 1.1rem;
+            color: var(--secondary);
+            font-weight: 500;
+        }
+        
+        .sort-filter select {
+            padding: 10px 15px;
+            border: 2px solid var(--medium);
+            border-radius: 8px;
+            background: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        
+        .sort-filter select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .fabric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .fabric-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--medium);
+            display: flex;
+            flex-direction: column;
+            min-height: 480px;
+        }
+        
+        .fabric-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .fabric-type {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .fabric-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .fabric-origin {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        
+        .fabric-body {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .fabric-structure {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .metrics {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .metric {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            flex: 1;
+            margin: 0 5px;
+        }
+        
+        .metric.co2 {
+            background: rgba(0, 85, 48, 0.08);
+            border: 1px solid rgba(0, 85, 48, 0.2);
+        }
+        
+        .metric.score {
+            background: rgba(10, 29, 61, 0.08);
+            border: 1px solid rgba(10, 29, 61, 0.2);
+        }
+        
+        .metric-title {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            color: #6c757d;
+        }
+        
+        .metric-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+        
+        .co2-value {
+            color: var(--primary);
+        }
+        
+        .score-value {
+            color: var(--secondary);
+        }
+        
+        .score-bar {
+            height: 8px;
+            background: var(--medium);
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .score-fill {
+            height: 100%;
+            background: var(--secondary);
+            border-radius: 4px;
+        }
+        
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(0, 85, 48, 0.1);
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .badge.eco {
+            background: rgba(40, 167, 69, 0.15);
+            color: var(--success);
+        }
+        
+        .badge.synthetic {
+            background: rgba(213, 22, 53, 0.1);
+            color: var(--danger);
+        }
+        
+        .fabric-footer {
+            padding: 15px 20px;
+            background: var(--light);
+            border-top: 1px solid var(--medium);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .fabric-uses {
+            font-size: 0.95rem;
+            color: #6c757d;
+        }
+        
+        .detail-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        
+        .detail-btn:hover {
+            background: var(--primary-light);
+        }
+        
+        .chart-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--light);
+            border-radius: 12px;
+        }
+        
+        .chart-title {
+            text-align: center;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        /* Clear Custom Fabrics Button */
+        .clear-custom-fabrics-btn {
+            width: 100%;
+            padding: 8px 12px;
+            margin-top: 10px;
+            background: rgba(213, 22, 53, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(213, 22, 53, 0.3);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .clear-custom-fabrics-btn:hover {
+            background: rgba(213, 22, 53, 0.2);
+            border-color: rgba(213, 22, 53, 0.5);
+        }
+        
+        .clear-custom-fabrics-btn i {
+            font-size: 0.8rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1100px) { .container { grid-template-columns: 250px 1fr; } .fabric-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); } .fabric-calculator-main .calculator-body { grid-template-columns: 1fr 1fr; gap: 20px; } .fabric-results { grid-column: 1 / -1; } } @media (max-width: 900px) { .container { grid-template-columns: 1fr; } .sidebar { margin-bottom: 25px; } .fabric-calculator-main .calculator-body { grid-template-columns: 1fr; gap: 20px; } .header-content { flex-direction: column; gap: 20px; text-align: center; } .logo-section { justify-content: center; } h1 { font-size: 2.2rem; } .subtitle { font-size: 1.1rem; } } @media (max-width: 600px) { .filters { flex-direction: column; align-items: flex-start; gap: 15px; } .fabric-grid { grid-template-columns: 1fr; } .yarn-row { grid-template-columns: 1fr; gap: 8px; } .fabric-actions { flex-direction: column; } .fabric-save-section { padding: 15px; } .fabric-name-input input { font-size: 16px; } .composition-item { flex-direction: column; align-items: flex-start; gap: 8px; } .composition-percentage { align-self: flex-end; font-size: 1.3rem; } .header-content { padding: 0 15px; } .logo-container svg { width: 50px; height: 50px; } .rabateks-text { font-size: 1.4rem; } h1 { font-size: 1.8rem; } .subtitle { font-size: 1rem; } }
+    
+.logo-title {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  justify-content: flex-start;
+}
+.logo {
+  height: 60px;
+  width: auto;
+}
+.rabateks {
+  color: var(--primary);
+  font-weight: bold;
+}
+.dpp {
+  color: var(--accent);
+  font-weight: bold;
+}
+.dashboard-title {
+  font-size: 1.2rem;
+  font-weight: normal;
+  color: var(--secondary);
+}
+
+</style>
+</head>
+<body>
+    <div class="container">
+        
+<header>
+  <div style="text-align:right; margin: 10px 20px;">
+    <a href="DashboardDPPFINAL.html" 
+       style="background-color:#005530;color:white;padding:8px 16px;
+              border-radius:6px;font-weight:bold;text-decoration:none;
+              display:inline-block;">
+      ← Back to Main Dashboard
+    </a>
+  </div>
+
+  <div class="logo-title">
+    <img src="data:image/png;base64,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" alt="Rabateks Logo" class="logo">
+    <div>
+      <h1><span class="rabateks">Rabateks</span> <span class="dpp">DPP</span></h1>
+      <h2 class="dashboard-title">Fabric Sustainability Dashboard</h2>
+    </div>
+  </div>
+</header>
+
+        
+        <div class="fabric-calculator-main">
+            <div class="calculator-header">
+                <i class="fas fa-layer-group"></i>
+                <span>Calculate Fabric Impact</span>
+            </div>
+            <div class="calculator-body">
+                <div class="fabric-inputs-container">
+                    <div class="fabric-inputs-header">
+                        <div>Fabric Configuration</div>
+                    </div>
+                    <div class="fabric-row">
+                        <label for="fabricType">Fabric Type:</label>
+                        <select id="fabricType">
+                            <option value="">Select fabric type</option>
+                            <option value="Woven">Woven</option>
+                            <option value="Circular Knit">Circular Knit</option>
+                            <option value="Flat Knit">Flat Knit</option>
+                            <option value="Nonwoven">Nonwoven</option>
+                        </select>
+                    </div>
+                    <div class="fabric-row">
+                        <label for="fabricConstruction">Construction:</label>
+                        <select id="fabricConstruction">
+                            <option value="">Select fabric type first</option>
+                        </select>
+                    </div>
+                    <div class="fabric-row">
+                        <label for="fabricWeight">Fabric Weight (g/m²):</label>
+                        <input type="number" id="fabricWeight" placeholder="e.g., 150" min="50" max="800" step="1">
+                    </div>
+                    <div class="fabric-row">
+                        <label for="fabricWidth">Fabric Width (cm):</label>
+                        <input type="number" id="fabricWidth" placeholder="e.g., 150" min="100" max="300" step="1">
+                    </div>
+                    <div class="yarn-selections">
+                        <h4>Yarn Composition</h4>
+                        <div id="yarnInputs">
+                            <div class="yarn-row">
+                                <div>
+                                    <label>Yarn Type:</label>
+                                    <select class="yarn-select">
+                                        <option value="">Select yarn</option>
+                                        <option value="Organic Cotton">Organic Cotton</option>
+                                        <option value="Recycled Cotton">Recycled Cotton</option>
+                                        <option value="Recycled Polyester">Recycled Polyester</option>
+                                        <option value="Tencel">Tencel</option>
+                                        <option value="Linen">Linen</option>
+                                        <option value="Hemp">Hemp</option>
+                                        <option value="Wool">Wool</option>
+                                        <option value="Polyester">Polyester</option>
+                                        <option value="Nylon">Nylon</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Percentage:</label>
+                                    <input type="number" class="yarn-percentage" placeholder="%" min="0" max="100" step="0.1">
+                                </div>
+                            </div>
+                            <div class="yarn-row">
+                                <div>
+                                    <label>Yarn Type:</label>
+                                    <select class="yarn-select">
+                                        <option value="">Select yarn</option>
+                                        <option value="Organic Cotton">Organic Cotton</option>
+                                        <option value="Recycled Cotton">Recycled Cotton</option>
+                                        <option value="Recycled Polyester">Recycled Polyester</option>
+                                        <option value="Tencel">Tencel</option>
+                                        <option value="Linen">Linen</option>
+                                        <option value="Hemp">Hemp</option>
+                                        <option value="Wool">Wool</option>
+                                        <option value="Polyester">Polyester</option>
+                                        <option value="Nylon">Nylon</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Percentage:</label>
+                                    <input type="number" class="yarn-percentage" placeholder="%" min="0" max="100" step="0.1">
+                                </div>
+                            </div>
+                            <div class="yarn-row">
+                                <div>
+                                    <label>Yarn Type:</label>
+                                    <select class="yarn-select">
+                                        <option value="">Select yarn</option>
+                                        <option value="Organic Cotton">Organic Cotton</option>
+                                        <option value="Recycled Cotton">Recycled Cotton</option>
+                                        <option value="Recycled Polyester">Recycled Polyester</option>
+                                        <option value="Tencel">Tencel</option>
+                                        <option value="Linen">Linen</option>
+                                        <option value="Hemp">Hemp</option>
+                                        <option value="Wool">Wool</option>
+                                        <option value="Polyester">Polyester</option>
+                                        <option value="Nylon">Nylon</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Percentage:</label>
+                                    <input type="number" class="yarn-percentage" placeholder="%" min="0" max="100" step="0.1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fabric-actions">
+                        <button class="fabric-btn calculate" id="calculateFabric">
+                            <i class="fas fa-calculator"></i> Calculate
+                        </button>
+                        <button class="fabric-btn reset" id="resetFabric">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                    </div>
+                </div>
+                <div class="fabric-save-section">
+                    <div class="fabric-name-input">
+                        <label for="fabricName">Custom Fabric Name:</label>
+                        <input type="text" id="fabricName" placeholder="e.g., Organic Cotton Jersey" maxlength="50">
+                    </div>
+                    <button class="fabric-btn save" id="saveFabric">
+                        <i class="fas fa-save"></i> Save to Database
+                    </button>
+                </div>
+                <div class="fabric-results">
+                    <div class="fabric-result-card">
+                        <div class="fabric-result-header">
+                            <div class="fabric-result-type">Custom</div>
+                            <h2 class="fabric-result-name">Awaiting Calculation...</h2>
+                            <p class="fabric-result-origin">Source: Custom configuration</p>
+                        </div>
+                        <div class="fabric-result-body">
+                            <p class="fabric-result-structure">Construction: Not yet determined</p>
+                            <div class="fabric-composition">
+                                <h4 class="composition-title">Yarn Composition:</h4>
+                                <div class="composition-list" id="previewCompositionList">
+                                    <!-- To be filled by JS -->
+                                </div>
+                            </div>
+                            <div class="fabric-result-metrics">
+                                <div class="fabric-result-metric co2">
+                                    <div class="fabric-result-metric-title">CO₂/kg</div>
+                                    <div class="fabric-result-metric-value" id="previewCo2">0.0</div>
+                                </div>
+                                <div class="fabric-result-metric score">
+                                    <div class="fabric-result-metric-title">Sustainability Score</div>
+                                    <div class="fabric-result-metric-value" id="previewScore">0</div>
+                                    <div class="fabric-result-score-bar">
+                                        <div class="fabric-result-score-fill" id="previewScoreFill" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fabric-result-footer">
+                            Custom fabric sustainability metrics
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <aside class="sidebar">
+            <div class="search-box"> <i class="fas fa-search"></i> <input type="text" id="searchInput" placeholder="Search fabrics..."> </div>
+            <div class="category-filter"> <h3 class="category-title"><i class="fas fa-layer-group"></i> Woven Fabrics</h3> <ul class="category-list"> <li class="category-item active"> <span>Denim</span> <span class="category-count">12</span> </li> </ul> </div>
+            <div class="category-filter"> <h3 class="category-title"><i class="fas fa-circle-notch"></i> Circular Knit</h3> <ul class="category-list"> <li class="category-item"> <span>Jersey</span> <span class="category-count">15</span> </li> </ul> </div>
+            <div class="category-filter"> <h3 class="category-title"><i class="fas fa-grip-lines"></i> Flat Knit</h3> <ul class="category-list"> <li class="category-item"> <span>Jacquard</span> <span class="category-count">6</span> </li> </ul> </div>
+            <div class="category-filter"> <h3 class="category-title"><i class="fas fa-th-large"></i> Nonwoven</h3> <ul class="category-list"> <li class="category-item"> <span>Spunbond</span> <span class="category-count">5</span> </li> </ul> </div>
+            <div class="category-filter"> <h3 class="category-title"><i class="fas fa-palette"></i> Custom Fabrics</h3> <ul class="category-list" id="customFabrics"> </ul> <button class="clear-custom-fabrics-btn" id="clearCustomFabrics"> <i class="fas fa-trash"></i> Clear All Custom Fabrics </button> </div>
+        </aside>
+        
+        <main class="main-content">
+            <div class="filters"> <div class="results-info"> Showing <span id="fabricCount">3</span> total fabrics </div> <div class="sort-filter"> <select id="sortSelect"> <option value="name">Sort by Name</option> <option value="co2-asc">CO₂: Low to High</option> <option value="co2-desc">CO₂: High to Low</option> <option value="score-asc">Score: Low to High</option> <option value="score-desc">Score: High to Low</option> <option value="weight-asc">Weight: Light to Heavy</option> <option value="weight-desc">Weight: Heavy to Light</option> </select> </div> </div>
+            <div class="fabric-grid" id="fabricGrid">
+                <div class="fabric-card"> <div class="fabric-header"> <div class="fabric-type">Woven</div> <h2 class="fabric-name">Organic Cotton Denim</h2> <p class="fabric-origin">Source: Turkey</p> </div> <div class="fabric-body"> <p class="fabric-structure">Construction: Twill weave, 320g/m²</p> <div class="metrics"> <div class="metric co2"> <div class="metric-title">CO₂/kg</div> <div class="metric-value co2-value">2.5</div> </div> <div class="metric score"> <div class="metric-title">Sustainability</div> <div class="metric-value score-value">84</div> <div class="score-bar"> <div class="score-fill" style="width: 84%"></div> </div> </div> </div> <div class="badges"> <span class="badge eco">Low Carbon</span> <span class="badge">Organic</span> <span class="badge">Natural Fiber</span> </div> </div> <div class="fabric-footer"> <span class="fabric-uses">Uses: Jeans, jackets, skirts</span> <button class="detail-btn">Details</button> </div> </div>
+                <div class="fabric-card"> <div class="fabric-header"> <div class="fabric-type">Circular Knit</div> <h2 class="fabric-name">Recycled Polyester Jersey</h2> <p class="fabric-origin">Source: Italy</p> </div> <div class="fabric-body"> <p class="fabric-structure">Construction: Single jersey, 180g/m²</p> <div class="metrics"> <div class="metric co2"> <div class="metric-title">CO₂/kg</div> <div class="metric-value co2-value">1.8</div> </div> <div class="metric score"> <div class="metric-title">Sustainability</div> <div class="metric-value score-value">89</div> <div class="score-bar"> <div class="score-fill" style="width: 89%"></div> </div> </div> </div> <div class="badges"> <span class="badge eco">Recycled</span> <span class="badge">Quick Dry</span> <span class="badge">Lightweight</span> </div> </div> <div class="fabric-footer"> <span class="fabric-uses">Uses: Sportswear, t-shirts, underwear</span> <button class="detail-btn">Details</button> </div> </div>
+                <div class="fabric-card"> <div class="fabric-header"> <div class="fabric-type">Flat Knit</div> <h2 class="fabric-name">Tencel & Wool Mix</h2> <p class="fabric-origin">Source: Sweden</p> </div> <div class="fabric-body"> <p class="fabric-structure">Construction: Jacquard knit, 240g/m²</p> <div class="metrics"> <div class="metric co2"> <div class="metric-title">CO₂/kg</div> <div class="metric-value co2-value">2.1</div> </div> <div class="metric score"> <div class="metric-title">Sustainability</div> <div class="metric-value score-value">92</div> <div class="score-bar"> <div class="score-fill" style="width: 92%"></div> </div> </div> </div> <div class="badges"> <span class="badge eco">Biodegradable</span> <span class="badge">Natural Fiber</span> <span class="badge">Thermo-regulating</span> </div> </div> <div class="fabric-footer"> <span class="fabric-uses">Uses: Sweaters, cardigans, shawls</span> <button class="detail-btn">Details</button> </div> </div>
+            </div>
+            <div class="chart-container"> <h3 class="chart-title">Average Environmental Impact by Fabric Category</h3> <canvas id="impactChart"></canvas> </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // --- DATA & CONFIGURATION ---
+            const yarnData = {
+                'Organic Cotton': { co2: 2.5, score: 85, type: 'Natural Fiber' },
+                'Recycled Cotton': { co2: 1.5, score: 90, type: 'Recycled' },
+                'Recycled Polyester': { co2: 1.8, score: 88, type: 'Recycled' },
+                'Tencel': { co2: 2.1, score: 92, type: 'Natural Fiber' },
+                'Linen': { co2: 2.0, score: 93, type: 'Natural Fiber' },
+                'Hemp': { co2: 1.2, score: 95, type: 'Natural Fiber' },
+                'Wool': { co2: 5.0, score: 70, type: 'Natural Fiber' },
+                'Polyester': { co2: 6.4, score: 40, type: 'Synthetic' },
+                'Nylon': { co2: 8.0, score: 30, type: 'Synthetic' }
+            };
+            
+            // NEW: Data structure for dependent dropdowns
+            const constructions = {
+                "Woven": ["Plain weave", "Twill weave", "Satin weave", "Denim", "Canvas", "Poplin", "Gabardine", "Herringbone", "Velvet", "Corduroy", "Terrycloth", "Broadcloth", "Serge"],
+                "Circular Knit": ["Single jersey", "Double jersey", "Interlock", "Rib knit", "Milano rib", "Fleece (Brushed or Loopback)", "French terry", "Ponte di Roma (Ponte knit)", "Jacquard jersey", "Mesh knit", "Thermal knit (Waffle knit)", "Pointelle knit"],
+                "Flat Knit": ["Cable knit", "Jacquard knit", "Intarsia knit", "Fully fashioned knit", "Full cardigan", "Half cardigan", "Jersey knit", "Waffle knit"],
+                "Nonwoven": ["Spunbond", "Meltblown", "Spunlace (Hydroentangled)", "Needle-punched", "Thermal bonded", "Chemical bonded", "SMS (Spunbond–Meltblown–Spunbond)", "SMMS (Spunbond–Meltblown–Meltblown–Spunbond)"]
+            };
+
+            let lastCalculatedData = null;
+
+            // --- DOM ELEMENTS ---
+            const fabricGrid = document.getElementById('fabricGrid');
+            const fabricCountSpan = document.getElementById('fabricCount');
+            const fabricTypeSelect = document.getElementById('fabricType');
+            const fabricConstructionSelect = document.getElementById('fabricConstruction');
+            const calculateFabricBtn = document.getElementById('calculateFabric');
+            const saveFabricBtn = document.getElementById('saveFabric');
+            const resetFabricBtn = document.getElementById('resetFabric');
+            
+            // --- HELPER FUNCTIONS ---
+
+            // Updates the total fabric count display
+            function updateFabricCount() {
+                const count = fabricGrid.querySelectorAll('.fabric-card').length;
+                fabricCountSpan.textContent = count;
+            }
+
+            // Creates the HTML string for a new main grid fabric card
+            function createMainFabricCardHTML(data) {
+                let badgesHTML = '';
+                const uniqueTypes = [...new Set(data.composition.map(y => yarnData[y.yarn].type))];
+                uniqueTypes.forEach(type => {
+                    let badgeClass = '';
+                    if (type === 'Recycled' || type === 'Natural Fiber') badgeClass = 'eco';
+                    if (type === 'Synthetic') badgeClass = 'synthetic';
+                    badgesHTML += `<span class="badge ${badgeClass}">${type}</span> `;
+                });
+
+                return `
+                    <div class="fabric-header"> <div class="fabric-type">${data.type}</div> <h2 class="fabric-name">${data.name}</h2> <p class="fabric-origin">Source: Custom Production</p> </div>
+                    <div class="fabric-body"> <p class="fabric-structure">Construction: ${data.construction}, ${data.weight}g/m²</p>
+                        <div class="metrics"> <div class="metric co2"> <div class="metric-title">CO₂/kg</div> <div class="metric-value co2-value">${data.co2.toFixed(2)}</div> </div> <div class="metric score"> <div class="metric-title">Sustainability</div> <div class="metric-value score-value">${Math.round(data.score)}</div> <div class="score-bar"> <div class="score-fill" style="width: ${Math.round(data.score)}%"></div> </div> </div> </div>
+                        <div class="badges">${badgesHTML}</div>
+                    </div>
+                    <div class="fabric-footer"> <span class="fabric-uses">Last updated: ${new Date().toLocaleDateString('en-US')}</span> <button class="detail-btn">Details</button> </div>
+                `;
+            }
+
+            // Resets all input fields in the calculator form
+            function resetForm() {
+                document.getElementById('fabricName').value = '';
+                fabricTypeSelect.value = '';
+                fabricWeight.value = '';
+                fabricWidth.value = '';
+                document.querySelectorAll('.yarn-select').forEach(select => select.value = '');
+                document.querySelectorAll('.yarn-percentage').forEach(input => input.value = '');
+                
+                // Trigger the change event to reset the construction dropdown
+                fabricTypeSelect.dispatchEvent(new Event('change'));
+
+                document.querySelector('.fabric-result-name').textContent = 'Awaiting Calculation...';
+                document.querySelector('.fabric-result-structure').textContent = 'Not yet determined';
+                document.getElementById('previewCompositionList').innerHTML = '';
+                document.getElementById('previewCo2').textContent = '0.0';
+                document.getElementById('previewScore').textContent = '0';
+                document.getElementById('previewScoreFill').style.width = '0%';
+                lastCalculatedData = null;
+            }
+
+            // --- EVENT LISTENERS ---
+
+            // NEW: Event listener for the Fabric Type dropdown
+            fabricTypeSelect.addEventListener('change', function() {
+                const selectedType = this.value;
+                fabricConstructionSelect.innerHTML = ''; // Clear existing options
+
+                if (selectedType && constructions[selectedType]) {
+                    // Add a default option first
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = "";
+                    defaultOption.textContent = "Select construction";
+                    fabricConstructionSelect.appendChild(defaultOption);
+
+                    // Populate with relevant options
+                    const options = constructions[selectedType];
+                    options.forEach(optionText => {
+                        const option = document.createElement('option');
+                        option.value = optionText;
+                        option.textContent = optionText;
+                        fabricConstructionSelect.appendChild(option);
+                    });
+                } else {
+                    // If no type is selected, show a generic message
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = "";
+                    defaultOption.textContent = "Select fabric type first";
+                    fabricConstructionSelect.appendChild(defaultOption);
+                }
+            });
+
+            // "CALCULATE" BUTTON
+            calculateFabricBtn.addEventListener('click', function() {
+                const fabricType = fabricTypeSelect.value;
+                const fabricConstruction = fabricConstructionSelect.value;
+                const fabricWeight = document.getElementById('fabricWeight').value;
+
+                if (!fabricType || !fabricConstruction || !fabricWeight) {
+                    alert('Please fill in the Fabric Type, Construction, and Weight fields.');
+                    lastCalculatedData = null;
+                    return;
+                }
+
+                const yarnInputs = document.querySelectorAll('.yarn-row');
+                let composition = [];
+                let totalPercentage = 0;
+                yarnInputs.forEach(row => {
+                    const yarn = row.querySelector('.yarn-select').value;
+                    const percentage = parseFloat(row.querySelector('.yarn-percentage').value);
+                    if (yarn && percentage > 0) {
+                        composition.push({ yarn, percentage });
+                        totalPercentage += percentage;
+                    }
+                });
+
+                if (composition.length === 0) { alert('Please enter at least one yarn composition.'); lastCalculatedData = null; return; }
+                if (Math.abs(totalPercentage - 100) > 0.1) { alert(`The sum of yarn percentages is ${totalPercentage.toFixed(1)}%. Please adjust to 100%.`); lastCalculatedData = null; return; }
+
+                let totalCO2 = 0;
+                let totalScore = 0;
+                composition.forEach(item => {
+                    totalCO2 += yarnData[item.yarn].co2 * (item.percentage / 100);
+                    totalScore += yarnData[item.yarn].score * (item.percentage / 100);
+                });
+
+                lastCalculatedData = { name: document.getElementById('fabricName').value || 'Unnamed Fabric', type: fabricType, construction: fabricConstruction, weight: fabricWeight, composition: composition, co2: totalCO2, score: totalScore };
+                
+                document.querySelector('.fabric-result-name').textContent = 'Calculated Results';
+                document.querySelector('.fabric-result-structure').textContent = `Construction: ${fabricConstruction}`;
+                document.getElementById('previewCo2').textContent = totalCO2.toFixed(2);
+                document.getElementById('previewScore').textContent = Math.round(totalScore);
+                document.getElementById('previewScoreFill').style.width = `${Math.round(totalScore)}%`;
+                
+                const compositionList = document.getElementById('previewCompositionList');
+                compositionList.innerHTML = '';
+                composition.forEach(item => {
+                    compositionList.innerHTML += `<div class="composition-item"><div class="composition-yarn-name">${item.yarn}</div><div class="composition-percentage">${item.percentage}%</div></div>`;
+                });
+                
+                alert('Calculation complete! Results are shown on the preview card.');
+            });
+
+            // "SAVE TO DATABASE" BUTTON
+            saveFabricBtn.addEventListener('click', function() {
+                const fabricName = document.getElementById('fabricName').value.trim();
+                if (!fabricName) { alert('Please enter a "Custom Fabric Name" before saving.'); return; }
+                if (!lastCalculatedData) { alert('Please calculate the data first by clicking the "Calculate" button.'); return; }
+
+                lastCalculatedData.name = fabricName;
+
+                const cardElement = document.createElement('div');
+                cardElement.className = 'fabric-card';
+                cardElement.innerHTML = createMainFabricCardHTML(lastCalculatedData);
+
+                fabricGrid.appendChild(cardElement);
+                updateFabricCount();
+                alert(`"${fabricName}" has been successfully added to the main list!`);
+                resetForm();
+            });
+
+            // "RESET" BUTTON
+            resetFabricBtn.addEventListener('click', function() {
+                resetForm();
+                alert('Form and preview have been reset!');
+            });
+            
+            // --- PAGE INITIALIZATION ---
+            updateFabricCount();
+            fabricTypeSelect.dispatchEvent(new Event('change')); // Initialize construction dropdown on page load
+
+            // Chart.js and other original functions
+            const ctx = document.getElementById('impactChart').getContext('2d');
+            const impactChart = new Chart(ctx, { type: 'bar', data: { labels: ['Woven', 'Circular Knit', 'Flat Knit', 'Nonwoven', 'Custom Fabrics'], datasets: [ { label: 'CO₂ Emission (kg/kg)', data: [3.2, 2.5, 2.8, 4.1, 2.3], backgroundColor: 'rgba(0, 85, 48, 0.7)', borderColor: 'rgba(0, 85, 48, 1)', borderWidth: 1 }, { label: 'Sustainability Score', data: [76, 82, 79, 68, 86], backgroundColor: 'rgba(249, 186, 0, 0.7)', borderColor: 'rgba(249, 186, 0, 1)', borderWidth: 1 } ] }, options: { responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Environmental Performance of Fabric Types' } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Values' } } } } });
+            document.querySelectorAll('.category-item').forEach(item => { item.addEventListener('click', function() { document.querySelectorAll('.category-item').forEach(i => { i.classList.remove('active'); }); this.classList.add('active'); alert(`Category "${this.querySelector('span').textContent}" selected!`); }); });
+            document.getElementById('clearCustomFabrics').addEventListener('click', function() { if (confirm('Are you sure you want to delete all custom fabrics?')) { alert('Custom fabrics have been cleared!'); } });
+        });
+    </script>
+</body>
+</html>

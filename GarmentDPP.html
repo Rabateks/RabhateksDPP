@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rabateks DPP — Garment Manufacturing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#02154e;
+  --accent:#f9ba00;
+  --green:#005530;
+  --red:#D51635;
+  --navy:#02154e;
+  --orange:#f9ba00;
+  --bg:#f6f7f9;
+  --card:#ffffff;
+  --muted:#8a94a6;
+  --border:#e6e8ee;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1b2430}
+
+/* Header */
+.app-header{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:14px 18px; border-bottom:1px solid var(--border); background:#fff;
+  position:sticky; top:0; z-index:40;
+}
+.header-left{display:flex; align-items:center; gap:12px}
+.brand-logo{display:inline-block;width:48px;height:48px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,85,48,0.3);overflow:hidden}
+.brand-logo img{width:100%;height:100%;object-fit:cover;display:block}
+.title{font-size:18px;font-weight:700;}
+.subtitle{font-size:12px;color:var(--muted)}
+
+/* Back link button */
+.back-link{
+  display:inline-flex; align-items:center; gap:8px; height:40px; padding:0 14px;
+  border-radius:10px; background:var(--green); color:#fff; font-weight:600; text-decoration:none;
+  border:1px solid transparent; box-shadow:0 2px 8px rgba(0,85,48,0.25);
+  transition:transform .15s, box-shadow .15s, background .15s;
+}
+.back-link:hover{ transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,85,48,0.35); }
+.back-link:active{ transform:translateY(0); }
+
+/* Layout */
+.container{max-width:1200px;margin:18px auto;padding:0 18px}
+.form-wrap{background:var(--card);border:2px solid var(--border);border-radius:14px;box-shadow:0 2px 10px rgba(2,21,78,0.05);position:relative}
+.form-wrap.editing{border-color:var(--green);}
+.editing-label{position:absolute;top:-12px;left:14px;background:var(--green);color:#fff;padding:2px 8px;font-size:12px;border-radius:6px;display:none;}
+.form-wrap.editing .editing-label{display:inline-block;}
+.form-row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;overflow-x:auto;padding:14px;scrollbar-width:thin}
+.field{flex:1 1 200px;display:flex;flex-direction:column;gap:6px;min-width:160px}
+.field label{font-size:12px;color:var(--muted)}
+.field input,.field select{height:40px;border:1px solid var(--border);border-radius:10px;padding:0 10px;background:#fff;font-size:14px}
+.field select[multiple]{height:auto;min-height:40px;padding:6px}
+.helper{font-size:11px;color:var(--muted);margin-top:-2px}
+.actions{display:flex;gap:10px;padding:0 14px 14px;flex-wrap:wrap}
+.btn{height:40px;padding:0 14px;border:1px solid transparent;border-radius:10px;background:var(--green);color:#fff;font-weight:600;cursor:pointer;transition:all 0.2s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,85,48,0.3)}
+.btn.secondary{background:#fff;color:var(--primary);border-color:var(--border)}
+.btn.secondary:hover{background:var(--bg);border-color:var(--primary)}
+.btn.danger{background:var(--red);color:#fff}
+.btn.danger:hover{background:#b01429;box-shadow:0 4px 12px rgba(213,22,53,0.3)}
+
+/* Dashboard cards */
+.dashboard{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.card{background:linear-gradient(135deg, #fff, #fafbfc);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);transition:transform 0.2s}
+.card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.1)}
+.metric-title{font-size:12px;color:var(--muted)}
+.metric-value{font-size:24px;font-weight:700;margin-top:8px;background:linear-gradient(135deg, var(--green), var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* List / Scorecards */
+.list{margin-top:16px;display:grid;gap:12px}
+.scorecard{border:1px solid var(--border);border-radius:14px;background:#fff;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:transform 0.2s, box-shadow 0.2s}
+.scorecard:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.12)}
+.scorecard-header{background:linear-gradient(135deg, var(--orange), #ffca28);color:#1a1a1a;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;font-weight:700;box-shadow:0 2px 4px rgba(0,0,0,0.1);border-radius:14px 14px 0 0}
+.scorecard-body{padding:12px 14px;border-top:1px solid var(--border)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.kv{background:#fafafa;border:1px solid var(--border);border-radius:10px;padding:10px}
+.kv .k{font-size:11px;color:var(--muted)}
+.kv .v{font-size:14px;font-weight:600;margin-top:4px}
+.row-actions{display:flex;gap:8px}
+.icon-btn{height:34px;padding:0 10px;border-radius:8px;border:1px solid var(--border);background:#fff;cursor:pointer;transition:all 0.2s;font-size:12px}
+.icon-btn:hover{background:var(--bg);border-color:var(--green)}
+.icon-btn.edit:hover{background:rgba(0,85,48,0.1);color:var(--green)}
+.icon-btn.delete:hover{background:rgba(213,22,53,0.1);color:var(--red);border-color:var(--red)}
+
+/* Multi-Select Dropdown */
+.multi-select-container { position: relative; width: 100%; }
+.multi-select-display { min-height: 40px; border: 1px solid var(--border); border-radius: 10px; padding: 6px 10px; background: #fff; cursor: pointer; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: 14px; }
+.multi-select-display:focus { outline: 2px solid var(--green); outline-offset: 1px; }
+.selected-tag { background: linear-gradient(135deg, var(--green), #007d4a); color: white; padding: 3px 10px; border-radius: 12px; font-size: 12px; display: flex; align-items: center; gap: 6px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,85,48,0.2); font-weight: 500; }
+.remove-tag { cursor: pointer; font-weight: bold; font-size: 14px; line-height: 1; padding: 0 2px; border-radius: 50%; transition: background-color 0.2s; }
+.remove-tag:hover { background: rgba(255,255,255,0.2); }
+.placeholder { color: var(--muted); font-size: 14px; flex: 1; }
+.dropdown-arrow { margin-left: auto; transition: transform 0.2s; font-size: 12px; color: var(--muted); }
+.multi-select-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; max-height: 200px; overflow-y: auto; display: none; margin-top: 2px; }
+.multi-select-dropdown.open { display: block; }
+.dropdown-option { padding: 10px 12px; cursor: pointer; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; transition: background-color 0.2s; }
+.dropdown-option:last-child { border-bottom: none; }
+.dropdown-option:hover { background: var(--bg); }
+.dropdown-option.selected { background: rgba(0, 85, 48, 0.1); font-weight: 500; }
+.checkbox { width: 16px; height: 16px; border: 2px solid var(--border); border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; transition: all 0.2s; }
+.checkbox.checked { background: var(--green); border-color: var(--green); }
+
+/* Responsive */
+@media (max-width:1000px){.dashboard{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.dashboard{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-left">
+    <span class="brand-logo"><img src="logo.png" alt="Rabateks Logo"></span>
+    <div>
+      <div class="title">
+        <span style="color:#005530;">Rabateks</span>
+        <span style="color:#f9ba00;">DPP</span>
+        <span style="color:#000;font-weight:400;"> — Garment Manufacturing</span>
+      </div>
+      <div class="subtitle">Digital Product Passport · Production Tracking · Quality Control</div>
+    </div>
+  </div>
+  <a class="back-link" href="Desktop/DPP%20FINAL%20VERSIONS/DashboardDPPFINAL.html" title="Back to Main Dashboard">← Back to Main Dashboard</a>
+</header>
+
+<main class="container">
+  <section class="form-wrap" id="formWrap">
+    <div class="editing-label">Editing Record</div>
+    <div class="form-row">
+      <div class="field">
+        <label>Country</label>
+        <select id="country">
+          <option value="Türkiye">Türkiye</option><option>Germany</option><option>Netherlands</option>
+          <option>Spain</option><option>United Kingdom</option><option>Italy</option><option>Portugal</option>
+        </select>
+      </div>
+
+      <div class="field"><label>PO No.</label><input id="po" type="text" placeholder="e.g., PO-24567"></div>
+      <div class="field"><label>Style Name</label><input id="style" type="text" placeholder="e.g., AURORA-TSH"></div>
+
+      <div class="field">
+        <label>Product Type</label>
+        <select id="productType">
+          <option>T-Shirt</option><option>Polo</option><option>Shirt</option><option>Hoodie</option>
+          <option>Dress</option><option>Jeans</option><option>Jacket</option><option>Skirt</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Fabric Type</label>
+        <select id="fabricType">
+          <option>Knit</option><option>Woven</option><option>Denim</option><option>Nonwoven</option>
+          <option>Sweatshirt Fleece</option><option>Rib</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Fabric Name</label>
+        <input id="fabricName" type="text" placeholder="e.g., Single Jersey / Twill / Denim" />
+        <div class="helper">Required</div>
+      </div>
+
+      <div class="field">
+        <label>Fabric Code</label>
+        <div class="input-row">
+          <input id="fabricCode" type="text" placeholder="e.g., SJ-180-KN / DN-420-WV" />
+          <button type="button" class="btn secondary" id="genCodeBtn" title="Generate from Type + Name + GSM">Generate</button>
+        </div>
+        <div class="helper">Required · Pattern: <code>AAA-123(-XXXX)</code></div>
+      </div>
+
+      <div class="field">
+        <label>Fabric Construction</label>
+        <select id="fabricConstruction">
+          <!-- KNIT -->
+          <optgroup label="Knit">
+            <option>Single Jersey</option><option>Double Jersey</option><option>Interlock</option>
+            <option>Rib 1x1</option><option>Rib 2x2</option><option>Ottoman</option><option>Waffle Knit</option>
+            <option>French Terry</option><option>Terry</option><option>Fleece Knit</option><option>Pique Knit</option>
+            <option>Jacquard Knit</option><option>Mesh Knit</option><option>Ponte Roma</option><option>Milano Rib</option>
+          </optgroup>
+          <!-- WOVEN -->
+          <optgroup label="Woven">
+            <option>Plain Weave / Poplin</option><option>Oxford</option><option>Chambray</option><option>Canvas</option>
+            <option>Twill</option><option>Denim</option><option>Satin</option><option>Sateen</option>
+            <option>Herringbone</option><option>Dobby</option><option>Seersucker</option><option>Jacquard Woven</option>
+            <option>Corduroy</option><option>Ripstop</option>
+          </optgroup>
+          <!-- OTHER -->
+          <optgroup label="Other">
+            <option>Lace</option><option>Velvet</option><option>Velour</option><option>Softshell (Knit Bonded)</option>
+            <option>Bonded / Laminated</option><option>Nonwoven Spunbond</option><option>Nonwoven Meltblown</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="field"><label>Fabric Weight (gsm)</label><input id="fabricWeight" type="number" min="0" step="1" placeholder="e.g., 180"></div>
+      <div class="field"><label>Quantity</label><input id="qty" type="number" min="0" step="1" placeholder="e.g., 1200"></div>
+
+      <div class="field">
+        <label>Production Step (multi)</label>
+        <div class="multi-select-container" id="stepsMultiSelect">
+          <div class="multi-select-display" tabindex="0">
+            <span class="placeholder">Select production steps...</span>
+            <span class="dropdown-arrow">▼</span>
+          </div>
+          <div class="multi-select-dropdown">
+            <div class="ms-actions">
+              <div class="ms-search"><input type="text" placeholder="Search steps..."></div>
+              <button type="button" class="small-btn ms-select-all">Select All</button>
+              <button type="button" class="small-btn ms-clear-all">Clear</button>
+            </div>
+            <div class="dropdown-option" data-value="Cutting"><div class="checkbox"></div><span>Cutting</span></div>
+            <div class="dropdown-option" data-value="Bundling"><div class="checkbox"></div><span>Bundling</span></div>
+            <div class="dropdown-option" data-value="Sewing"><div class="checkbox"></div><span>Sewing</span></div>
+            <div class="dropdown-option" data-value="Embroidery"><div class="checkbox"></div><span>Embroidery</span></div>
+            <div class="dropdown-option" data-value="Printing"><div class="checkbox"></div><span>Printing</span></div>
+            <div class="dropdown-option" data-value="Washing"><div class="checkbox"></div><span>Washing</span></div>
+            <div class="dropdown-option" data-value="Drying"><div class="checkbox"></div><span>Drying</span></div>
+            <div class="dropdown-option" data-value="Finishing"><div class="checkbox"></div><span>Finishing</span></div>
+            <div class="dropdown-option" data-value="Trimming"><div class="checkbox"></div><span>Trimming</span></div>
+            <div class="dropdown-option" data-value="Ironing/Pressing"><div class="checkbox"></div><span>Ironing/Pressing</span></div>
+            <div class="dropdown-option" data-value="Quality Control"><div class="checkbox"></div><span>Quality Control</span></div>
+            <div class="dropdown-option" data-value="Packing"><div class="checkbox"></div><span>Packing</span></div>
+            <div class="dropdown-option" data-value="Dispatch"><div class="checkbox"></div><span>Dispatch</span></div>
+          </div>
+        </div>
+        <div class="helper">Tıklayarak istediğiniz production step'leri seçin.</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn" id="addBtn">➕ Add Record</button>
+      <button type="button" class="btn secondary" id="clearBtn">🗑️ Clear</button>
+      <button type="button" class="btn" id="saveChangesBtn" style="display:none;">💾 Save Changes</button>
+      <button type="button" class="btn danger" id="cancelEditBtn" style="display:none;">❌ Cancel</button>
+      <button type="button" class="btn secondary" id="exportCsvBtn">⬇️ Export CSV</button>
+      <button type="button" class="btn secondary" id="importCsvBtn">⬆️ Import CSV</button>
+      <button type="button" class="btn secondary" id="templateCsvBtn">📄 Download CSV Template</button>
+    </div>
+  </section>
+
+  <section class="dashboard">
+    <div class="card">
+      <div class="metric-title">📋 Total POs</div>
+      <div class="metric-value" id="mPos">0</div>
+    </div>
+    <div class="card">
+      <div class="metric-title">📦 Total Quantity</div>
+      <div class="metric-value" id="mQty">0</div>
+    </div>
+    <div class="card">
+      <div class="metric-title">⚖️ Avg Fabric Weight (gsm)</div>
+      <div class="metric-value" id="mAvgGsm">0</div>
+    </div>
+    <div class="card">
+      <div class="metric-title">🎨 Unique Styles</div>
+      <div class="metric-value" id="mStyles">0</div>
+    </div>
+  </section>
+
+  <section class="list" id="scorecards"></section>
+</main>
+
+<script>
+// Multi-Select Component
+class MultiSelect {
+  constructor(container, options = {}) {
+    this.container = container;
+    this.display = container.querySelector('.multi-select-display');
+    this.dropdown = container.querySelector('.multi-select-dropdown');
+    this.options = container.querySelectorAll('.dropdown-option');
+    this.searchInput = container.querySelector('.ms-search input');
+    this.selectAllBtn = container.querySelector('.ms-select-all');
+    this.clearAllBtn = container.querySelector('.ms-clear-all');
+    this.selectedValues = new Set();
+    this.placeholder = options.placeholder || 'Select options...';
+    this.onChangeCallback = options.onChange || (() => {});
+    this.init();
+  }
+  init() {
+    this.display.addEventListener('click', (e) => {
+      if (e.target.classList.contains('remove-tag')) return;
+      this.toggleDropdown();
+    });
+    this.options.forEach(option => {
+      option.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.toggleOption(option.dataset.value);
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!this.container.contains(e.target)) this.closeDropdown();
+    });
+    if(this.searchInput){ this.searchInput.addEventListener('input', ()=>{ this.filterOptions(this.searchInput.value); }); }
+    if(this.selectAllBtn){ this.selectAllBtn.addEventListener('click', ()=>{ this.selectVisible(); }); }
+    if(this.clearAllBtn){ this.clearAllBtn.addEventListener('click', ()=>{ this.clear(); this.onChangeCallback(this.getValues()); }); }
+    this.display.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.toggleDropdown(); }
+    });
+    this.updateDisplay();
+  }
+  toggleDropdown() {
+    const isOpen = this.dropdown.classList.contains('open');
+    if (isOpen) this.closeDropdown(); else this.openDropdown();
+  }
+  openDropdown() { this.dropdown.classList.add('open'); this.display.querySelector('.dropdown-arrow').style.transform = 'rotate(180deg)'; }
+  closeDropdown() { this.dropdown.classList.remove('open'); this.display.querySelector('.dropdown-arrow').style.transform = 'rotate(0deg)'; }
+  toggleOption(value) {
+    if (this.selectedValues.has(value)) this.selectedValues.delete(value);
+    else this.selectedValues.add(value);
+    this.updateDisplay(); this.updateOptions(); this.onChangeCallback(this.getValues());
+  }
+  updateDisplay() {
+    const placeholder = this.display.querySelector('.placeholder');
+    const arrow = this.display.querySelector('.dropdown-arrow');
+    this.display.querySelectorAll('.selected-tag').forEach(tag => tag.remove());
+    if (this.selectedValues.size === 0) {
+      placeholder.style.display = 'block';
+    } else {
+      placeholder.style.display = 'none';
+      this.selectedValues.forEach(value => {
+        const tag = document.createElement('div');
+        tag.className = 'selected-tag';
+        tag.innerHTML = `<span>${value}</span><span class="remove-tag" data-value="${value}">×</span>`;
+        tag.querySelector('.remove-tag').addEventListener('click', (e) => {
+          e.stopPropagation(); this.toggleOption(value);
+        });
+        this.display.insertBefore(tag, arrow);
+      });
+    }
+  }
+  updateOptions() {
+    this.options.forEach(option => {
+      const checkbox = option.querySelector('.checkbox');
+      const isSelected = this.selectedValues.has(option.dataset.value);
+      if (isSelected) { option.classList.add('selected'); checkbox.classList.add('checked'); checkbox.innerHTML = '✓'; }
+      else { option.classList.remove('selected'); checkbox.classList.remove('checked'); checkbox.innerHTML = ''; }
+    });
+  }
+  filterOptions(q){
+    const needle = (q||'').toLowerCase();
+    this.options.forEach(opt=>{ const label = opt.textContent.toLowerCase(); opt.style.display = label.includes(needle) ? '' : 'none'; });
+  }
+  selectVisible(){
+    this.options.forEach(opt=>{ if(opt.style.display !== 'none'){ this.selectedValues.add(opt.dataset.value); } });
+    this.updateDisplay(); this.updateOptions(); this.onChangeCallback(this.getValues());
+  }
+  getValues() { return Array.from(this.selectedValues); }
+  setValues(values) { this.selectedValues = new Set(values || []); this.updateDisplay(); this.updateOptions(); }
+  clear() { this.selectedValues.clear(); this.updateDisplay(); this.updateOptions(); }
+}
+
+// Main Application
+(function(){
+  const qs = (sel, root=document) => root.querySelector(sel);
+  const formWrap = qs('#formWrap');
+  const form = {
+    country: qs('#country'),
+    po: qs('#po'),
+    style: qs('#style'),
+    productType: qs('#productType'),
+    fabricType: qs('#fabricType'),
+    fabricName: qs('#fabricName'),
+    fabricCode: qs('#fabricCode'),
+    fabricConstruction: qs('#fabricConstruction'),
+    fabricWeight: qs('#fabricWeight'),
+    qty: qs('#qty'),
+  };
+  const addBtn = qs('#addBtn'), clearBtn = qs('#clearBtn');
+  const saveChangesBtn = qs('#saveChangesBtn'), cancelEditBtn = qs('#cancelEditBtn');
+  const list = qs('#scorecards');
+
+  // Initialize MultiSelect
+  const stepsMultiSelect = new MultiSelect(qs('#stepsMultiSelect'), {
+    placeholder: 'Select production steps...',
+    onChange: () => { if(state.editingId) state.dirty = true; }
+  });
+
+  let state = { rows: [], editingId: null, dirty: false };
+
+  // --- Manual fields: validation & auto-code ---
+  const CODE_RE = /^[A-Z]{2,5}-\d{2,4}(?:-[A-Z0-9]{2,4})?$/;
+
+  function mapNameToPrefix(name){
+    const n = (name||'').toLowerCase().trim();
+    const dict = {
+      'single jersey':'SJ','interlock':'IL','rib':'RB','french terry':'FT',
+      'pique knit':'PQ','denim':'DN','twill':'TW','poplin':'PL','oxford':'OX','canvas':'CV','satin':'ST','herringbone':'HB',
+      'seersucker':'SS','lace':'LC','velvet':'VL','velour':'VR','jersey':'SJ','pique':'PQ'
+    };
+    for(const k of Object.keys(dict)){ if(n.includes(k)) return dict[k]; }
+    const letters = n.replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(Boolean).map(w=>w[0].toUpperCase());
+    const ac = (letters.join('') || 'FB').slice(0,4);
+    return ac;
+  }
+
+  function mapTypeToSuffix(t){
+    const s = (t||'').toLowerCase();
+    if(s.includes('knit')) return 'KN';
+    if(s.includes('woven') || s.includes('denim') || s.includes('twill') || s.includes('oxford')) return 'WV';
+    if(s.includes('nonwoven')) return 'NW';
+    return 'OT';
+  }
+
+  function generateFabricCode(){
+    const prefix = mapNameToPrefix(form.fabricName.value);
+    const gsm = parseInt(form.fabricWeight.value,10);
+    const num = Number.isFinite(gsm) && gsm>0 ? String(gsm) : '00';
+    const suf = mapTypeToSuffix(form.fabricType.value);
+    return `${prefix}-${num}-${suf}`;
+  }
+
+  function validateManualFields(row){
+    if(!row.fabricName || !row.fabricName.trim()){ alert('Please enter Fabric Name.'); return false; }
+    if(!row.fabricCode || !CODE_RE.test(row.fabricCode)){ alert('Please enter a valid Fabric Code (e.g., SJ-180-KN).'); return false; }
+    return true;
+  }
+
+  // --- CSV Export / Import / Template ---
+  const CSV_HEADERS = ["id","country","po","style","productType","fabricType","fabricName","fabricCode","fabricConstruction","fabricWeight","qty","steps"];
+
+  function escapeCSV(value){
+    if (value === null || value === undefined) return "";
+    const str = String(value);
+    if (/[\",\n]/.test(str)) { return '"' + str.replace(/\"/g,'""') + '"'; }
+    return str;
+  }
+
+  function rowsToCSV(rows){
+    const header = CSV_HEADERS.join(",");
+    const lines = rows.map(r=>{
+      const steps = (r.steps||[]).join(";");
+      const vals = [ r.id, r.country, r.po, r.style, r.productType, r.fabricType, r.fabricName, r.fabricCode, r.fabricConstruction, r.fabricWeight, r.qty, steps ];
+      return vals.map(escapeCSV).join(",");
+    });
+    return [header, ...lines].join("\n");
+  }
+
+  function downloadCSV(){
+    const csv = rowsToCSV(state.rows);
+    const bom = "\ufeff"; // UTF-8 BOM
+    const blob = new Blob([bom + csv], {type: "text/csv;charset=utf-8;"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const ts = new Date();
+    const y = ts.getFullYear().toString();
+    const m = String(ts.getMonth()+1).padStart(2,"0");
+    const d = String(ts.getDate()).padStart(2,"0");
+    a.href = url; a.download = `garment_dpp_export_${y}${m}${d}.csv`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function downloadCSVTemplate(){
+    const header = CSV_HEADERS.join(",");
+    const bom = "\ufeff";
+    const blob = new Blob([bom + header + "\n"], {type:"text/csv;charset=utf-8;"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "garment_dpp_template.csv";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function parseCSV(text){
+    const lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n").filter(l=>l.length>0);
+    if(lines.length === 0) return [];
+    function splitCSV(line){
+      const out = []; let cur = ""; let inQuotes = false;
+      for(let i=0;i<line.length;i++){
+        const ch = line[i];
+        if(ch === '"'){ if(inQuotes && line[i+1] === '"'){ cur += '"'; i++; } else { inQuotes = !inQuotes; } }
+        else if(ch === ',' && !inQuotes){ out.push(cur); cur = ""; }
+        else { cur += ch; }
+      }
+      out.push(cur);
+      return out;
+    }
+    const headers = splitCSV(lines[0]).map(h=>h.replace(/^\"|\"$/g,""));
+    const idx = {}; headers.forEach((h,i)=> idx[h]=i);
+    const rows = [];
+    for(let li=1; li<lines.length; li++){
+      const parts = splitCSV(lines[li]);
+      if(parts.length===1 && parts[0].trim()==="") continue;
+      const obj = {};
+      CSV_HEADERS.forEach(h=>{
+        const i = idx[h];
+        obj[h] = (i!==undefined && parts[i]!==undefined) ? parts[i].replace(/^\"|\"$/g,"") : "";
+      });
+      obj.fabricWeight = parseInt(obj.fabricWeight,10) || 0;
+      obj.qty = parseInt(obj.qty,10) || 0;
+      obj.steps = obj.steps ? obj.steps.split(";").filter(Boolean) : [];
+      rows.push(obj);
+    }
+    return rows;
+  }
+
+  function importCSVFile(file){
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      try{
+        const text = e.target.result;
+        const incoming = parseCSV(text);
+        if(incoming.length===0){ alert('CSV appears to be empty.'); return; }
+        let added=0, updated=0;
+        const map = new Map(state.rows.map(r=>[((r.po||'')+'|'+(r.style||'')).toLowerCase(), r]));
+        incoming.forEach(row=>{
+          const key = ((row.po||'')+'|'+(row.style||'')).toLowerCase();
+          if(map.has(key)){
+            const existing = map.get(key);
+            row.id = existing.id;
+            map.set(key, row);
+            updated++;
+          }else{
+            row.id = row.id || crypto.randomUUID();
+            map.set(key, row);
+            added++;
+          }
+        });
+        state.rows = Array.from(map.values());
+        saveDB(); render();
+        alert(`Import completed. Added: ${added}, Updated: ${updated}`);
+      }catch(err){
+        console.error(err);
+        alert('Failed to import CSV: ' + err.message);
+      }
+    };
+    reader.readAsText(file, 'utf-8');
+  }
+
+  // DB
+  function loadDB(){ const data = localStorage.getItem('gm_dpp_rows'); state.rows = data ? JSON.parse(data) : []; }
+  function saveDB(){ localStorage.setItem('gm_dpp_rows', JSON.stringify(state.rows)); }
+
+  function toInt(v){ const n = parseInt(v,10); return Number.isFinite(n)?n:0; }
+
+  function clearForm(){
+    Object.values(form).forEach(el=>{
+      if(el.tagName==='SELECT'){ el.selectedIndex = -1; }
+      else{ el.value=''; }
+    });
+    stepsMultiSelect.clear();
+  }
+
+  function collectFormData(){
+    return {
+      id: state.editingId || crypto.randomUUID(),
+      country: form.country.value,
+      po: form.po.value.trim(),
+      style: form.style.value.trim(),
+      productType: form.productType.value,
+      fabricType: form.fabricType.value,
+      fabricName: form.fabricName.value,
+      fabricCode: form.fabricCode.value,
+      fabricConstruction: form.fabricConstruction.value,
+      fabricWeight: toInt(form.fabricWeight.value),
+      qty: toInt(form.qty.value),
+      steps: stepsMultiSelect.getValues()
+    };
+  }
+
+  function addRecord(){
+    const row = collectFormData();
+    if(!row.po || !row.style){ alert('Please enter PO No. and Style Name.'); return; }
+    if(!row.country || !row.productType || !row.fabricType || !row.fabricConstruction){ alert('Please select Country, Product Type, Fabric Type and Fabric Construction.'); return; }
+    if(!validateManualFields(row)) return;
+    const key = (row.po+'|'+row.style).toLowerCase();
+    const hasDup = state.rows.some(r => (r.po+'|'+r.style).toLowerCase() === key);
+    if(hasDup){
+      if(!confirm('A record with the same PO and Style exists. Overwrite?')) return;
+      state.rows = state.rows.map(r=> ((r.po+'|'+r.style).toLowerCase()===key? row : r));
+    } else {
+      state.rows.unshift(row);
+    }
+    saveDB(); render(); clearForm();
+  }
+
+  function removeRecord(id){
+    state.rows = state.rows.filter(r=>r.id!==id);
+    saveDB(); render();
+  }
+
+  function editRecord(id){
+    if(state.editingId && state.editingId!==id && state.dirty){
+      if(!confirm("Discard changes?")) return;
+    }
+    const r = state.rows.find(x=>x.id===id); if(!r) return;
+    form.country.value = r.country || '';
+    form.po.value = r.po || '';
+    form.style.value = r.style || '';
+    form.productType.value = r.productType || '';
+    form.fabricType.value = r.fabricType || '';
+    form.fabricName.value = r.fabricName || '';
+    form.fabricCode.value = r.fabricCode || '';
+    form.fabricConstruction.value = r.fabricConstruction || '';
+    form.fabricWeight.value = r.fabricWeight ?? '';
+    form.qty.value = r.qty ?? '';
+    stepsMultiSelect.setValues(r.steps || []);
+
+    state.editingId = id;
+    formWrap.classList.add('editing');
+    addBtn.style.display='none'; clearBtn.style.display='none';
+    saveChangesBtn.style.display='inline-block'; cancelEditBtn.style.display='inline-block';
+    state.dirty = false;
+  }
+
+  function saveChanges(){
+    const updated = collectFormData();
+    state.rows = state.rows.map(r=> r.id===state.editingId ? updated : r);
+    saveDB(); render(); exitEdit();
+  }
+
+  function exitEdit(){
+    state.editingId = null;
+    formWrap.classList.remove('editing');
+    addBtn.style.display='inline-block'; clearBtn.style.display='inline-block';
+    saveChangesBtn.style.display='none'; cancelEditBtn.style.display='none';
+    clearForm(); state.dirty=false;
+  }
+
+  function renderMetrics(){
+    document.getElementById('mPos').textContent = new Set(state.rows.map(r=>r.po)).size;
+    document.getElementById('mQty').textContent = state.rows.reduce((s,r)=>s+r.qty,0).toLocaleString();
+    const gsms = state.rows.map(r=>r.fabricWeight).filter(n=>n>0);
+    document.getElementById('mAvgGsm').textContent = gsms.length? Math.round(gsms.reduce((s,n)=>s+n,0)/gsms.length):0;
+    document.getElementById('mStyles').textContent = new Set(state.rows.map(r=>r.style)).size;
+  }
+
+  function kv(k,v){ return `<div class="kv"><div class="k">${k}</div><div class="v">${(v!==undefined&&v!==null&&v!=='')?v:'-'}</div></div>`; }
+
+  function renderList(){
+    list.innerHTML = state.rows.map(r=>{
+      const header = `${r.country} · ${r.po} · ${r.style}`;
+      return `<article class="scorecard" data-id="${r.id}">
+        <div class="scorecard-header">
+          <div>${header}</div>
+          <div class="row-actions">
+            <button class="icon-btn edit" data-act="edit">✏️ Edit</button>
+            <button class="icon-btn" data-act="toggle">👁️ Details</button>
+            <button class="icon-btn delete" data-act="delete">🗑️ Delete</button>
+          </div>
+        </div>
+        <div class="scorecard-body" hidden>
+          <div class="grid">
+            ${kv('Product Type', r.productType)}
+            ${kv('Fabric Type', r.fabricType)}
+            ${kv('Fabric Name', r.fabricName)}
+            ${kv('Fabric Code', r.fabricCode)}
+            ${kv('Fabric Construction', r.fabricConstruction)}
+            ${kv('Fabric Weight (gsm)', r.fabricWeight)}
+            ${kv('Quantity', r.qty.toLocaleString())}
+            ${kv('Production Step(s)', (r.steps||[]).join(', '))}
+            ${kv('Country', r.country)}
+            ${kv('PO No.', r.po)}
+            ${kv('Style Name', r.style)}
+          </div>
+        </div>
+      </article>`;
+    }).join('');
+  }
+
+  function render(){ renderMetrics(); renderList(); }
+
+  // Events
+  list.addEventListener('click', e=>{
+    const btn = e.target.closest('button'); if(!btn) return;
+    const card = e.target.closest('.scorecard'); const id = card?.dataset.id; const act = btn.dataset.act;
+    if(act==='delete'){ if(confirm('Delete this record?')) removeRecord(id); }
+    else if(act==='toggle'){ 
+      const body = card.querySelector('.scorecard-body'); 
+      body.hidden=!body.hidden; 
+      btn.innerHTML = body.hidden ? '👁️ Details' : '🔼 Hide'; 
+    }
+    else if(act==='edit') editRecord(id);
+  });
+
+  // Dirty mark on input changes
+  Object.values(form).forEach(el=>{
+    el.addEventListener('input', ()=>{ if(state.editingId) state.dirty = true; });
+    el.addEventListener('change', ()=>{ if(state.editingId) state.dirty = true; });
+  });
+
+  addBtn.addEventListener('click', addRecord);
+  clearBtn.addEventListener('click', ()=>{ if(confirm('Clear the form?')) clearForm(); });
+  saveChangesBtn.addEventListener('click', saveChanges);
+  cancelEditBtn.addEventListener('click', exitEdit);
+
+  // Generate code
+  document.getElementById('genCodeBtn').addEventListener('click', ()=>{
+    form.fabricCode.value = generateFabricCode();
+    if(state.editingId) state.dirty = true;
+  });
+  form.fabricCode.addEventListener('input', ()=>{
+    form.fabricCode.value = form.fabricCode.value.toUpperCase();
+    if(state.editingId) state.dirty = true;
+  });
+
+  // CSV buttons
+  document.getElementById('exportCsvBtn').addEventListener('click', downloadCSV);
+  document.getElementById('importCsvBtn').addEventListener('click', ()=>{
+    const input = document.createElement('input');
+    input.type='file'; input.accept='.csv';
+    input.onchange = (e)=>{ const f=e.target.files[0]; if(f) importCSVFile(f); };
+    input.click();
+  });
+  document.getElementById('templateCsvBtn').addEventListener('click', downloadCSVTemplate);
+
+  // bootstrap
+  loadDB();
+  if(state.rows.length===0){
+    state.rows = [
+      {id:crypto.randomUUID(), country:'Türkiye', po:'PO-12001', style:'NOVA-POLO', productType:'Polo', fabricType:'Knit', fabricConstruction:'Pique Knit', fabricWeight:220, qty:1800, steps:['Cutting','Sewing','Quality Control','Packing']},
+      {id:crypto.randomUUID(), country:'Germany', po:'PO-12002', style:'ALTA-JNS', productType:'Jeans', fabricType:'Denim', fabricConstruction:'Denim', fabricWeight:420, qty:950, steps:['Cutting','Sewing','Washing','Finishing','Packing']}
+    ];
+    saveDB();
+  }
+  render();
+})();
+</script>
+</body>
+</html>
