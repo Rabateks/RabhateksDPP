@@ -142,7 +142,7 @@
             border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.08);
             border: 1px solid #f0f0f0;
-            text-align: center;
+            text-align: center.
         }
 
         .stat-icon {
@@ -209,7 +209,7 @@
 
         .btn-primary {
             background-color: #005530;
-            color: white;
+            color: white.
         }
 
         .btn-primary:hover {
@@ -256,36 +256,13 @@
             margin-left: 10px;
         }
 
-        .paper {
-            background-color: #005530;
-            color: white;
-        }
+        .paper { background-color: #005530; color: white; }
+        .furniture { background-color: #f9ba00; color: #333; }
+        .cleaning { background-color: #02154e; color: white; }
+        .packaging { background-color: #666; color: white; }
+        .catering { background-color: #D51635; color: white; }
 
-        .furniture {
-            background-color: #f9ba00;
-            color: #333;
-        }
-
-        .cleaning {
-            background-color: #02154e;
-            color: white;
-        }
-
-        .packaging {
-            background-color: #666;
-            color: white;
-        }
-
-        .catering {
-            background-color: #D51635;
-            color: white;
-        }
-
-        .helper-text {
-            font-size: 12px;
-            color: #666;
-            margin-top: 5px;
-        }
+        .helper-text { font-size: 12px; color: #666; margin-top: 5px; }
 
         .chart-container {
             background-color: #ffffff;
@@ -312,25 +289,10 @@
             margin-left: 10px;
         }
 
-        .excellent {
-            background-color: #005530;
-            color: white;
-        }
-
-        .good {
-            background-color: #f9ba00;
-            color: #333;
-        }
-
-        .average {
-            background-color: #666;
-            color: white;
-        }
-
-        .needs-improvement {
-            background-color: #D51635;
-            color: white;
-        }
+        .excellent { background-color: #005530; color: white; }
+        .good { background-color: #f9ba00; color: #333; }
+        .average { background-color: #666; color: white; }
+        .needs-improvement { background-color: #D51635; color: white; }
 
         .overview-section {
             background: #005530;
@@ -361,7 +323,7 @@
             font-size: 28px;
             font-weight: bold;
             margin-bottom: 8px;
-            color: #333; /* Changed: All values now use dark color for readability */
+            color: #333;
         }
 
         .overview-label {
@@ -372,18 +334,9 @@
             font-weight: 600;
         }
 
-        /* Additional specific color overrides for better contrast */
-        .overview-value.supplies-carbon {
-            color: #005530; /* Dark green for supplies carbon */
-        }
-
-        .overview-value.waste-carbon {
-            color: #D51635; /* Dark red for waste carbon */
-        }
-
-        .overview-value.sustainability-score {
-            color: #02154e; /* Dark blue for sustainability score */
-        }
+        .overview-value.supplies-carbon { color: #005530; }
+        .overview-value.waste-carbon { color: #D51635; }
+        .overview-value.sustainability-score { color: #02154e; }
 
         .tags-container {
             display: flex;
@@ -410,32 +363,12 @@
         }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .supply-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-
-            .header {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .header-left {
-                justify-content: center;
-            }
+            .container { padding: 10px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .supply-item { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .header { flex-direction: column; gap: 15px; }
+            .header-left { justify-content: center; }
         }
     </style>
 </head>
@@ -448,9 +381,8 @@
                 <p class="subtitle">Digital Product Passport • Supplies Tracking • Waste Management • Sustainability Control</p>
             </div>
         </div>
-        <a href="RabateksDPPDashboard.html" class="back-to-dashboard">
-            ← Back to Main Dashboard
-        </a>
+        <!-- HREF sabit dosya adına bağlı değildi; dinamik olarak JS ayarlayacak -->
+        <a class="back-to-dashboard">← Back to Main Dashboard</a>
     </header>
 
     <div class="container">
@@ -827,7 +759,6 @@
         // Auto-calculate carbon footprint based on category
         document.getElementById('category').addEventListener('change', function() {
             const carbonFactorInput = document.getElementById('carbon-factor');
-            
             switch(this.value) {
                 case 'Paper & Stationery': carbonFactorInput.value = '3.3'; break;
                 case 'Office Furniture': carbonFactorInput.value = '150.0'; break;
@@ -839,68 +770,59 @@
             }
         });
 
-        // Auto-calculate monthly cost
+        // Auto-calculate monthly cost (example)
         document.getElementById('monthly-usage').addEventListener('blur', function() {
             const usage = parseFloat(this.value);
             const unitCost = parseFloat(document.getElementById('unit-cost').value);
-            
             if (usage && unitCost) {
                 const monthlyCost = (usage * unitCost).toFixed(2);
                 console.log(`Monthly cost: €${monthlyCost}`);
             }
         });
 
-        // Form validation and submission
-        document.querySelector('.btn-primary').addEventListener('click', function() {
-            // Add form validation and submission logic here
-            alert('Office supply/waste item added successfully!');
-        });
-
-        // Update calculations when page loads
+        // Update calculations when page loads (example values)
         function updateCalculations() {
-            // Sample calculations for demonstration
-            const paperCarbon = 3.2;
-            const furnitureCarbon = 1.4;
-            const cleaningCarbon = 0.9;
-            const packagingCarbon = 0.6;
-            const cateringCarbon = 1.5;
-            const miscCarbon = 0.8;
-
+            const paperCarbon = 3.2, furnitureCarbon = 1.4, cleaningCarbon = 0.9, packagingCarbon = 0.6, cateringCarbon = 1.5, miscCarbon = 0.8;
             const totalSuppliesCarbon = paperCarbon + furnitureCarbon + cleaningCarbon + packagingCarbon + cateringCarbon + miscCarbon;
-            
-            // Waste calculations
-            const paperWaste = 0.9;
-            const organicWaste = 0.6;
-            const plasticWaste = 0.5;
-            const generalWaste = 0.3;
-            
+
+            const paperWaste = 0.9, organicWaste = 0.6, plasticWaste = 0.5, generalWaste = 0.3;
             const totalWasteCarbon = paperWaste + organicWaste + plasticWaste + generalWaste;
             const totalSuppliesWasteCarbon = totalSuppliesCarbon + totalWasteCarbon;
 
-            // Update display
             document.getElementById('total_supplies_carbon').textContent = totalSuppliesCarbon.toFixed(1);
             document.getElementById('total_waste_carbon').textContent = totalWasteCarbon.toFixed(1);
             document.getElementById('total_supplies_waste_carbon').textContent = totalSuppliesWasteCarbon.toFixed(1);
-            
-            // Calculate sustainability score
-            const recyclingRate = 68;
-            const sustainableProducts = 74;
-            const carbonReduction = 35;
+
+            const recyclingRate = 68, sustainableProducts = 74, carbonReduction = 35;
             const sustainabilityScore = Math.round((recyclingRate + sustainableProducts + carbonReduction) / 3);
-            
             document.getElementById('sustainability_score').textContent = sustainabilityScore;
         }
 
-        // Initialize calculations when page loads
         document.addEventListener('DOMContentLoaded', function() {
             updateCalculations();
-            
-            // Add event listeners for form inputs
-            const inputs = document.querySelectorAll('input, select');
-            inputs.forEach(input => {
+            document.querySelectorAll('input, select').forEach(input => {
                 input.addEventListener('change', updateCalculations);
             });
         });
+    </script>
+
+    <!-- BACK TO DASHBOARD SCRIPT (GitHub Pages uyumlu) -->
+    <script>
+    (function () {
+        function getBasePath() {
+            const parts = location.pathname.split('/').filter(Boolean);
+            // Proje sayfasında isen: "/repo-adi/", user/org sayfasında isen: "/"
+            return parts.length > 0 ? `/${parts[0]}/` : '/';
+        }
+        const base = getBasePath();
+        document.querySelectorAll('a.back-to-dashboard').forEach(a => {
+            a.setAttribute('href', `${base}index.html`);
+            a.addEventListener('click', function (e) {
+                e.preventDefault();
+                window.location.href = `${base}index.html`;
+            });
+        });
+    })();
     </script>
 </body>
 </html>

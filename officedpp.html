@@ -349,7 +349,7 @@
                 <p class="subtitle">Digital Product Passport • Energy Monitoring • Office Operations Carbon Footprint</p>
             </div>
         </div>
-        <a href="RabateksDPPDashboard.html" class="back-to-dashboard">
+        <a class="back-to-dashboard">
             ← Back to Main Dashboard
         </a>
     </header>
@@ -554,6 +554,25 @@
         document.addEventListener('DOMContentLoaded', function() {
             calculateCarbon();
         });
+    </script>
+
+    <!-- BACK TO DASHBOARD SCRIPT (GitHub Pages uyumlu) -->
+    <script>
+    (function () {
+        function getBasePath() {
+            const parts = location.pathname.split('/').filter(Boolean);
+            // Proje sayfasında isen: "/repo-adi/", user/org sayfasında isen: "/"
+            return parts.length > 0 ? `/${parts[0]}/` : '/';
+        }
+        const base = getBasePath();
+        document.querySelectorAll('a.back-to-dashboard').forEach(a => {
+            a.setAttribute('href', `${base}index.html`);
+            a.addEventListener('click', function (e) {
+                e.preventDefault();
+                window.location.href = `${base}index.html`;
+            });
+        });
+    })();
     </script>
 </body>
 </html>

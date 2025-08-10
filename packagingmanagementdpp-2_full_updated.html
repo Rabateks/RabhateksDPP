@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rabateks Packaging DPP - Digital Product Passport</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -46,21 +42,10 @@
             font-weight: 700;
         }
 
-        .header-text .subtitle {
-            color: #666;
-            font-size: 14px;
-        }
+        .header-text .subtitle { color: #666; font-size: 14px; }
+        .dpp-title { color: #f9ba00; font-weight: 600; }
 
-        .dpp-title {
-            color: #f9ba00;
-            font-weight: 600;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
         .form-section {
             background-color: #ffffff;
@@ -78,17 +63,9 @@
             margin-bottom: 20px;
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
+        .form-group { display: flex; flex-direction: column; }
 
-        label {
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: #333;
-            font-size: 14px;
-        }
+        label { font-weight: 600; margin-bottom: 5px; color: #333; font-size: 14px; }
 
         input, select, textarea {
             padding: 12px;
@@ -105,12 +82,7 @@
             box-shadow: 0 0 0 3px rgba(0, 85, 48, 0.1);
         }
 
-        .tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-        }
+        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 
         .tag {
             background-color: #005530;
@@ -123,17 +95,9 @@
             align-items: center;
             gap: 5px;
         }
+        .tag .remove { cursor: pointer; font-weight: bold; }
 
-        .tag .remove {
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
+        .button-group { display: flex; gap: 10px; margin-top: 20px; }
 
         .btn {
             padding: 12px 24px;
@@ -145,24 +109,11 @@
             font-size: 14px;
         }
 
-        .btn-primary {
-            background-color: #005530;
-            color: white;
-        }
+        .btn-primary { background-color: #005530; color: white; }
+        .btn-primary:hover { background-color: #004429; transform: translateY(-1px); }
 
-        .btn-primary:hover {
-            background-color: #004429;
-            transform: translateY(-1px);
-        }
-
-        .btn-secondary {
-            background-color: #666;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background-color: #555;
-        }
+        .btn-secondary { background-color: #666; color: white; }
+        .btn-secondary:hover { background-color: #555; }
 
         .stats-grid {
             display: grid;
@@ -180,21 +131,9 @@
             text-align: center;
         }
 
-        .stat-icon {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            color: #666;
-            font-size: 14px;
-        }
+        .stat-icon { font-size: 24px; margin-bottom: 10px; }
+        .stat-value { font-size: 28px; font-weight: bold; margin-bottom: 5px; }
+        .stat-label { color: #666; font-size: 14px; }
 
         .packaging-list {
             background-color: #ffffff;
@@ -216,42 +155,14 @@
             border-radius: 8px;
         }
 
-        .packaging-info h3 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
+        .packaging-info h3 { font-size: 16px; font-weight: 600; margin-bottom: 5px; }
+        .packaging-details { font-size: 14px; color: #666; }
+        .packaging-actions { display: flex; gap: 10px; }
 
-        .packaging-details {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .packaging-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-small {
-            padding: 6px 12px;
-            font-size: 12px;
-            border-radius: 4px;
-        }
-
-        .btn-edit {
-            background-color: #02154e;
-            color: white;
-        }
-
-        .btn-details {
-            background-color: #666;
-            color: white;
-        }
-
-        .btn-delete {
-            background-color: #D51635;
-            color: white;
-        }
+        .btn-small { padding: 6px 12px; font-size: 12px; border-radius: 4px; }
+        .btn-edit { background-color: #02154e; color: white; }
+        .btn-details { background-color: #666; color: white; }
+        .btn-delete { background-color: #D51635; color: white; }
 
         .sustainability-indicator {
             display: inline-block;
@@ -261,27 +172,11 @@
             font-weight: 600;
             margin-left: 10px;
         }
+        .sustainable { background-color: #005530; color: white; }
+        .moderate { background-color: #f9ba00; color: #333; }
+        .improvement-needed { background-color: #D51635; color: white; }
 
-        .sustainable {
-            background-color: #005530;
-            color: white;
-        }
-
-        .moderate {
-            background-color: #f9ba00;
-            color: #333;
-        }
-
-        .improvement-needed {
-            background-color: #D51635;
-            color: white;
-        }
-
-        .helper-text {
-            font-size: 12px;
-            color: #666;
-            margin-top: 5px;
-        }
+        .helper-text { font-size: 12px; color: #666; margin-top: 5px; }
 
         .chart-container {
             background-color: #ffffff;
@@ -292,61 +187,46 @@
             border: 1px solid #f0f0f0;
         }
 
-        .chart-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 20px;
-        }
+        .chart-title { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 20px; }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .packaging-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
+            .container { padding: 10px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .packaging-item { flex-direction: column; align-items: flex-start; gap: 15px; }
         }
-    
-.back-link {
-    margin-left: auto;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    height: 40px;
-    padding: 0 14px;
-    border-radius: 10px;
-    background: #005530;
-    color: #fff;
-    font-weight: 600;
-    text-decoration: none;
-    border: 1px solid transparent;
-    box-shadow: 0 2px 8px rgba(0,85,48,0.25);
-    transition: transform .15s, box-shadow .15s, background .15s;
-}
-.back-link:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,85,48,0.35); }
-.back-link:active { transform: translateY(0); }
-</style>
+
+        /* Back to Dashboard (sağ üst) */
+        .back-link {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            height: 40px;
+            padding: 0 14px;
+            border-radius: 10px;
+            background: #005530;
+            color: #fff;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid transparent;
+            box-shadow: 0 2px 8px rgba(0,85,48,0.25);
+            transition: transform .15s, box-shadow .15s, background .15s;
+        }
+        .back-link:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,85,48,0.35); }
+        .back-link:active { transform: translateY(0); }
+    </style>
 </head>
 <body>
-    <header class="header"><div class="logo">R</div>
+    <header class="header">
+        <div class="logo">R</div>
         <div class="header-text">
             <h1>Rabateks <span class="dpp-title">DPP</span> — Packaging Management</h1>
             <p class="subtitle">Digital Product Passport • Material Tracking • Sustainability Control</p>
         </div>
-        <a class="back-link" href="Desktop/DPP%20FINAL%20VERSIONS/DashboardDPPFINAL.html">← Back to Main Dashboard</a>
-</header>
+        <!-- HREF'i JS ayarlayacak -->
+        <a class="back-link">← Back to Main Dashboard</a>
+    </header>
 
     <div class="container">
         <!-- Statistics Overview -->
@@ -581,10 +461,7 @@
                 plugins: {
                     legend: {
                         position: 'bottom',
-                        labels: {
-                            padding: 20,
-                            usePointStyle: true
-                        }
+                        labels: { padding: 20, usePointStyle: true }
                     }
                 }
             }
@@ -605,18 +482,11 @@
             },
             options: {
                 responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
+                plugins: { legend: { display: false } },
                 scales: {
                     y: {
                         beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Usage Volume (thousands)'
-                        }
+                        title: { display: true, text: 'Usage Volume (thousands)' }
                     }
                 }
             }
@@ -653,6 +523,25 @@
             // Add form validation and submission logic here
             alert('Packaging material added successfully!');
         });
+    </script>
+
+    <!-- BACK TO DASHBOARD SCRIPT (GitHub Pages uyumlu) -->
+    <script>
+    (function () {
+        function getBasePath() {
+            const parts = location.pathname.split('/').filter(Boolean);
+            // Proje sayfasında isen: "/repo-adi/", user/org sayfasında isen: "/"
+            return parts.length > 0 ? `/${parts[0]}/` : '/';
+        }
+        const base = getBasePath();
+        document.querySelectorAll('a.back-link').forEach(a => {
+            a.setAttribute('href', `${base}index.html`);
+            a.addEventListener('click', function (e) {
+                e.preventDefault();
+                window.location.href = `${base}index.html`;
+            });
+        });
+    })();
     </script>
 </body>
 </html>
