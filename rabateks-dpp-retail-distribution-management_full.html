@@ -160,7 +160,7 @@
             <p class="subtitle">Digital Product Passport • Store Operations • Distribution Centers • Customer Experience</p>
         </div>
         <!-- HREF'i JS ayarlayacak -->
-        <a class="back-link">← Back to Main Dashboard</a>
+        <a class="back-link" href="index.html">← Back to Main Dashboard</a>
     </header>
 
     <div class="container">
@@ -507,23 +507,6 @@
         });
     </script>
 
-    <!-- BACK TO DASHBOARD SCRIPT (GitHub Pages uyumlu) -->
-    <script>
-    (function () {
-        function getBasePath() {
-            const parts = location.pathname.split('/').filter(Boolean);
-            // Proje sayfasında isen: "/repo-adi/", user/org sayfasında isen: "/"
-            return parts.length > 0 ? `/${parts[0]}/` : '/';
-        }
-        const base = getBasePath();
-        document.querySelectorAll('a.back-link').forEach(a => {
-            a.setAttribute('href', `${base}index.html`);
-            a.addEventListener('click', function (e) {
-                e.preventDefault();
-                window.location.href = `${base}index.html`;
-            });
-        });
-    })();
-    </script>
+
 </body>
 </html>

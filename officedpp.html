@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -349,7 +349,7 @@
                 <p class="subtitle">Digital Product Passport • Energy Monitoring • Office Operations Carbon Footprint</p>
             </div>
         </div>
-        <a class="back-to-dashboard">
+        <a class="back-to-dashboard" href="index.html">
             ← Back to Main Dashboard
         </a>
     </header>
@@ -358,133 +358,133 @@
         <div class="phase-indicator">PHASE 1 - OFFICE ENERGY MONITORING</div>
 
         <div class="data-input-section">
-            <h2 style="color: #005530; margin-bottom: 20px; font-size: 24px;">📊 Enerji Verilerini Girin</h2>
+            <h2 style="color: #005530; margin-bottom: 20px; font-size: 24px;">📊 Enter Energy Data</h2>
             <div class="input-grid">
                 <div class="input-group">
-                    <label>Aylık Elektrik Tüketimi (kWh)</label>
-                    <input type="number" id="electricity" placeholder="Örn: 45000" value="45000">
+                    <label>Monthly Electricity Consumption (kWh)</label>
+                    <input type="number" id="electricity" placeholder="e.g.: 45000" value="45000">
                 </div>
                 <div class="input-group">
-                    <label>Aylık Doğalgaz Tüketimi (m³)</label>
-                    <input type="number" id="gas" placeholder="Örn: 8500" value="8500">
+                    <label>Monthly Natural Gas Consumption (m³)</label>
+                    <input type="number" id="gas" placeholder="e.g.: 8500" value="8500">
                 </div>
                 <div class="input-group">
-                    <label>Ofis Alanı (m²)</label>
-                    <input type="number" id="area" placeholder="Örn: 2500" value="2500">
+                    <label>Office Area (m²)</label>
+                    <input type="number" id="area" placeholder="e.g.: 2500" value="2500">
                 </div>
                 <div class="input-group">
-                    <label>Çalışan Sayısı</label>
-                    <input type="number" id="employees" placeholder="Örn: 180" value="180">
+                    <label>Number of Employees</label>
+                    <input type="number" id="employees" placeholder="e.g.: 180" value="180">
                 </div>
             </div>
-            <button class="calculate-btn" onclick="calculateCarbon()">🔄 Carbon Footprint Hesapla</button>
+            <button class="calculate-btn" onclick="calculateCarbon()">🔄 Calculate Carbon Footprint</button>
         </div>
 
         <div class="dashboard-grid">
             <div class="card">
                 <div class="card-title">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z"/></svg>
-                    Toplam CO₂ Emisyonu
+                    Total CO₂ Emissions
                 </div>
                 <div class="metric-value" id="totalCO2">26.8</div>
                 <div class="metric-unit">ton CO₂/ay</div>
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: 75%"></div>
                 </div>
-                <span class="status-badge status-high" id="totalStatus">YÜKSEK</span>
+                <span class="status-badge status-high" id="totalStatus">HIGH</span>
             </div>
 
             <div class="card">
                 <div class="card-title">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/></svg>
-                    Çalışan Başına Emisyon
+                    Emissions Per Employee
                 </div>
                 <div class="metric-value" id="perEmployee">149</div>
-                <div class="metric-unit">kg CO₂/çalışan/ay</div>
+                <div class="metric-unit">kg CO₂/employee/month</div>
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: 60%"></div>
                 </div>
-                <span class="status-badge status-medium" id="employeeStatus">ORTA</span>
+                <span class="status-badge status-medium" id="employeeStatus">MEDIUM</span>
             </div>
 
             <div class="card">
                 <div class="card-title">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M13,2L3,14H12L11,22L21,10H12L13,2Z"/></svg>
-                    Elektrik Emisyonu
+                    Electricity Emissions
                 </div>
                 <div class="metric-value" id="electricCO2">19.8</div>
                 <div class="metric-unit">ton CO₂/ay</div>
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: 70%"></div>
                 </div>
-                <span class="status-badge status-high">YÜKSEK</span>
+                <span class="status-badge status-high">HIGH</span>
             </div>
 
             <div class="card">
                 <div class="card-title">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/></svg>
-                    Doğalgaz Emisyonu
+                    Natural Gas Emissions
                 </div>
                 <div class="metric-value" id="gasCO2">7.0</div>
                 <div class="metric-unit">ton CO₂/ay</div>
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: 45%"></div>
                 </div>
-                <span class="status-badge status-medium">ORTA</span>
+                <span class="status-badge status-medium">MEDIUM</span>
             </div>
 
             <div class="card">
                 <div class="card-title">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M12,2L3,14H12L11,22L21,10H12L13,2Z"/></svg>
-                    Enerji Yoğunluğu
+                    Energy Intensity
                 </div>
                 <div class="metric-value" id="intensity">10.7</div>
-                <div class="metric-unit">kg CO₂/m²/ay</div>
+                <div class="metric-unit">kg CO₂/m²/month</div>
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: 65%"></div>
                 </div>
-                <span class="status-badge status-medium">ORTA</span>
+                <span class="status-badge status-medium">MEDIUM</span>
             </div>
 
             <div class="card">
                 <div class="card-title">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M7,2V4H8V18A4,4 0 0,0 12,22A4,4 0 0,0 16,18V4H17V2H7M9,4H15V18A2,2 0 0,1 12,20A2,2 0 0,1 10,18V4H9Z"/></svg>
-                    Benchmark Skoru
+                    Benchmark Score
                 </div>
                 <div class="metric-value" id="benchmarkScore">62</div>
-                <div class="metric-unit">/ 100 puan</div>
+                <div class="metric-unit">/ 100 points</div>
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: 62%"></div>
                 </div>
-                <span class="status-badge status-medium">GELİŞTİRİLEBİLİR</span>
+                <span class="status-badge status-medium">IMPROVABLE</span>
             </div>
         </div>
 
         <div class="chart-container">
-            <h3 style="color: #333; margin-bottom: 20px; font-size: 20px;">📈 Aylık Carbon Emisyon Trendi</h3>
+            <h3 style="color: #333; margin-bottom: 20px; font-size: 20px;">📈 Monthly Carbon Emission Trend</h3>
             <div class="chart">
-                <div class="bar" style="height: 60%">Oca<br>24.5</div>
-                <div class="bar" style="height: 75%">Şub<br>28.2</div>
+                <div class="bar" style="height: 60%">Jan<br>24.5</div>
+                <div class="bar" style="height: 75%">Feb<br>28.2</div>
                 <div class="bar" style="height: 85%">Mar<br>31.1</div>
-                <div class="bar" style="height: 70%">Nis<br>26.8</div>
+                <div class="bar" style="height: 70%">Apr<br>26.8</div>
                 <div class="bar" style="height: 65%">May<br>25.4</div>
-                <div class="bar" style="height: 55%">Haz<br>22.1</div>
+                <div class="bar" style="height: 55%">Jun<br>22.1</div>
             </div>
         </div>
 
         <div class="recommendations">
-            <h3 style="color: #f9ba00; margin-bottom: 20px; font-size: 24px;">💡 Anlık İyileştirme Önerileri</h3>
+            <h3 style="color: #f9ba00; margin-bottom: 20px; font-size: 24px;">💡 Instant Improvement Recommendations</h3>
             <div class="recommendation-item">
-                <strong style="color: #D51635;">⚡ Elektrik Tüketimi:</strong> LED dönüşümü ile %30 tasarruf sağlanabilir. Yıllık 71 ton CO₂ azaltım.
+                <strong style="color: #D51635;">⚡ Electricity Consumption:</strong> 30% savings can be achieved with LED conversion. Annual 71 ton CO₂ reduction.
             </div>
             <div class="recommendation-item">
-                <strong style="color: #005530;">🌡️ HVAC Optimizasyonu:</strong> Akıllı termostat sistemi ile %15 enerji tasarrufu. Yıllık 48 ton CO₂ azaltım.
+                <strong style="color: #005530;">🌡️ HVAC Optimization:</strong> 15% energy savings with smart thermostat system. Annual 48 ton CO₂ reduction.
             </div>
             <div class="recommendation-item">
-                <strong style="color: #02154e;">🔌 IT Ekipman:</strong> Power management ile %20 elektrik tasarrufu. Yıllık 35 ton CO₂ azaltım.
+                <strong style="color: #02154e;">🔌 IT Equipment:</strong> 20% electricity savings with power management. Annual 35 ton CO₂ reduction.
             </div>
             <div class="recommendation-item">
-                <strong style="color: #f9ba00;">☀️ Yenilenebilir Enerji:</strong> %50 yeşil enerji kullanımı ile yıllık 119 ton CO₂ azaltım.
+                <strong style="color: #f9ba00;">☀️ Renewable Energy:</strong> Annual 119 ton CO₂ reduction with 50% green energy usage.
             </div>
         </div>
     </div>
@@ -530,13 +530,13 @@
             const element = document.getElementById(elementId);
             if (value < thresholds[0]) {
                 element.className = 'status-badge status-low';
-                element.textContent = 'DÜŞÜK';
+                element.textContent = 'LOW';
             } else if (value < thresholds[1]) {
                 element.className = 'status-badge status-medium';
-                element.textContent = 'ORTA';
+                element.textContent = 'MEDIUM';
             } else {
                 element.className = 'status-badge status-high';
-                element.textContent = 'YÜKSEK';
+                element.textContent = 'HIGH';
             }
         }
 
@@ -556,23 +556,6 @@
         });
     </script>
 
-    <!-- BACK TO DASHBOARD SCRIPT (GitHub Pages uyumlu) -->
-    <script>
-    (function () {
-        function getBasePath() {
-            const parts = location.pathname.split('/').filter(Boolean);
-            // Proje sayfasında isen: "/repo-adi/", user/org sayfasında isen: "/"
-            return parts.length > 0 ? `/${parts[0]}/` : '/';
-        }
-        const base = getBasePath();
-        document.querySelectorAll('a.back-to-dashboard').forEach(a => {
-            a.setAttribute('href', `${base}index.html`);
-            a.addEventListener('click', function (e) {
-                e.preventDefault();
-                window.location.href = `${base}index.html`;
-            });
-        });
-    })();
-    </script>
+
 </body>
 </html>

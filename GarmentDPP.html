@@ -56,6 +56,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
 .field label{font-size:12px;color:var(--muted)}
 .field input,.field select{height:40px;border:1px solid var(--border);border-radius:10px;padding:0 10px;background:#fff;font-size:14px}
 .field select[multiple]{height:auto;min-height:40px;padding:6px}
+input[readonly]{background:#f7f9fb;color:#4b5563;border-style:dashed}
 .helper{font-size:11px;color:var(--muted);margin-top:-2px}
 .actions{display:flex;gap:10px;padding:0 14px 14px;flex-wrap:wrap}
 .btn{height:40px;padding:0 14px;border:1px solid transparent;border-radius:10px;background:var(--green);color:#fff;font-weight:600;cursor:pointer;transition:all 0.2s}
@@ -66,7 +67,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
 .btn.danger:hover{background:#b01429;box-shadow:0 4px 12px rgba(213,22,53,0.3)}
 
 /* Dashboard cards */
-.dashboard{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.dashboard{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:16px}
 .card{background:linear-gradient(135deg, #fff, #fafbfc);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);transition:transform 0.2s}
 .card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.1)}
 .metric-title{font-size:12px;color:var(--muted)}
@@ -107,6 +108,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
 .checkbox.checked { background: var(--green); border-color: var(--green); }
 
 /* Responsive */
+@media (max-width:1200px){.dashboard{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:1000px){.dashboard{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:560px){.dashboard{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
 </style>
@@ -115,7 +117,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
 
 <header class="app-header">
   <div class="header-left">
-    <span class="brand-logo"><img src="logo.png" alt="Rabateks Logo"></span>
+    <span class="brand-logo"><img src=assets/img/logo.png" alt="Rabateks Logo"></span>
     <div>
       <div class="title">
         <span style="color:#005530;">Rabateks</span>
@@ -125,7 +127,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
       <div class="subtitle">Digital Product Passport · Production Tracking · Quality Control</div>
     </div>
   </div>
-  <a class="back-link" href="Desktop/DPP%20FINAL%20VERSIONS/DashboardDPPFINAL.html" title="Back to Main Dashboard">← Back to Main Dashboard</a>
+  <a class="back-link" href="index.html" title="Back to Main Dashboard">← Back to Main Dashboard</a>
 </header>
 
 <main class="container">
@@ -146,8 +148,129 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
       <div class="field">
         <label>Product Type</label>
         <select id="productType">
-          <option>T-Shirt</option><option>Polo</option><option>Shirt</option><option>Hoodie</option>
-          <option>Dress</option><option>Jeans</option><option>Jacket</option><option>Skirt</option>
+          <!-- WOVEN -->
+          <optgroup label="Woven">
+            <option>Dress shirt</option>
+            <option>Casual shirt</option>
+            <option>Flannel shirt</option>
+            <option>Suit jacket</option>
+            <option>Trousers</option>
+            <option>Waistcoat</option>
+            <option>Blazer</option>
+            <option>Trench coat</option>
+            <option>Bomber jacket</option>
+            <option>Safari jacket</option>
+            <option>Chinos</option>
+            <option>Dress pants</option>
+            <option>Cargo pants</option>
+            <option>Pencil skirt</option>
+            <option>Pleated skirt</option>
+            <option>A-line skirt</option>
+            <option>Shift dress</option>
+            <option>Shirt dress</option>
+            <option>Wrap dress</option>
+            <option>Blouse</option>
+            <option>Tunic</option>
+            <option>Peasant top</option>
+            <option>Tailored shorts</option>
+            <option>Bermuda shorts</option>
+            <option>Overcoat</option>
+            <option>Pea coat</option>
+            <option>Duffle coat</option>
+            <option>Fedora hat</option>
+            <option>Bucket hat</option>
+            <option>Tote bag</option>
+            <option>Clutch bag</option>
+            <option>Uniform shirt</option>
+            <option>Work trousers</option>
+          </optgroup>
+
+          <!-- CIRCULAR KNIT -->
+          <optgroup label="Circular Knit">
+            <option>Crew neck T-shirt</option>
+            <option>V-neck T-shirt</option>
+            <option>Polo shirt</option>
+            <option>Crewneck sweatshirt</option>
+            <option>Hoodie</option>
+            <option>Quarter-zip sweatshirt</option>
+            <option>Jogger pants</option>
+            <option>Sweatpants</option>
+            <option>Tank top</option>
+            <option>Lightweight sweater</option>
+            <option>Thermal underwear</option>
+            <option>Long johns</option>
+            <option>Knit pyjamas</option>
+            <option>Jersey sports top</option>
+            <option>Yoga top</option>
+            <option>Knit dress</option>
+            <option>Bodycon dress</option>
+            <option>Jersey shorts</option>
+            <option>Jersey skirt</option>
+          </optgroup>
+
+          <!-- FLAT KNIT -->
+          <optgroup label="Flat Knit">
+            <option>Crew neck sweater</option>
+            <option>V-neck sweater</option>
+            <option>Turtleneck sweater</option>
+            <option>Button-up cardigan</option>
+            <option>Open-front cardigan</option>
+            <option>Poncho</option>
+            <option>Vest</option>
+            <option>Sleeveless pullover</option>
+            <option>Knitted shawl</option>
+            <option>Knitted scarf</option>
+            <option>Knitted beanie</option>
+            <option>Knitted cap</option>
+            <option>Knitted gloves</option>
+            <option>Knitted dress</option>
+            <option>Knitted baby romper</option>
+            <option>Knitted waistcoat</option>
+          </optgroup>
+
+          <!-- NON-WOVEN -->
+          <optgroup label="Non-Woven">
+            <option>Medical gown</option>
+            <option>Surgical mask</option>
+            <option>Surgical cap</option>
+            <option>Disposable coverall</option>
+            <option>Disposable tablecloth</option>
+            <option>Non-woven shopper bag</option>
+            <option>Sanitary pad top layer</option>
+            <option>Baby diaper top layer</option>
+            <option>Cleaning cloth</option>
+            <option>Non-woven filter</option>
+            <option>Non-woven glove lining</option>
+            <option>Disposable hotel slippers</option>
+            <option>Gift wrap</option>
+            <option>Garment bag</option>
+          </optgroup>
+
+          <!-- DENIM -->
+          <optgroup label="Denim">
+            <option>Slim jeans</option>
+            <option>Straight jeans</option>
+            <option>Bootcut jeans</option>
+            <option>Flare jeans</option>
+            <option>Boyfriend jeans</option>
+            <option>Skinny jeans</option>
+            <option>Trucker denim jacket</option>
+            <option>Oversized denim jacket</option>
+            <option>Western denim shirt</option>
+            <option>Mini denim skirt</option>
+            <option>Midi denim skirt</option>
+            <option>Maxi denim skirt</option>
+            <option>Denim overall</option>
+            <option>Denim pinafore dress</option>
+            <option>Cut-off denim shorts</option>
+            <option>Bermuda denim shorts</option>
+            <option>Denim tote bag</option>
+            <option>Denim backpack</option>
+            <option>Denim bucket hat</option>
+            <option>Denim cap</option>
+            <option>Denim work overalls</option>
+            <option>Denim vest</option>
+          </optgroup>
         </select>
       </div>
 
@@ -232,6 +355,13 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
         </div>
         <div class="helper">Tıklayarak istediğiniz production step'leri seçin.</div>
       </div>
+
+      <!-- NEW: Auto CO2 field -->
+      <div class="field">
+        <label>CO₂ Emission (kg) — Auto</label>
+        <input id="co2" type="number" placeholder="0.00" readonly>
+        <div class="helper" id="co2Helper">Estimated from GSM × product area × emission factor.</div>
+      </div>
     </div>
 
     <div class="actions">
@@ -262,13 +392,17 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
       <div class="metric-title">🎨 Unique Styles</div>
       <div class="metric-value" id="mStyles">0</div>
     </div>
+    <div class="card">
+      <div class="metric-title">🌱 Total CO₂ (kg)</div>
+      <div class="metric-value" id="mCO2">0</div>
+    </div>
   </section>
 
   <section class="list" id="scorecards"></section>
 </main>
 
 <script>
-// Multi-Select Component
+// Multi-Select Component (unchanged)
 class MultiSelect {
   constructor(container, options = {}) {
     this.container = container;
@@ -356,7 +490,7 @@ class MultiSelect {
   clear() { this.selectedValues.clear(); this.updateDisplay(); this.updateOptions(); }
 }
 
-// Main Application
+// Main Application (mostly unchanged)
 (function(){
   const qs = (sel, root=document) => root.querySelector(sel);
   const formWrap = qs('#formWrap');
@@ -371,6 +505,8 @@ class MultiSelect {
     fabricConstruction: qs('#fabricConstruction'),
     fabricWeight: qs('#fabricWeight'),
     qty: qs('#qty'),
+    co2: qs('#co2'),
+    co2Helper: qs('#co2Helper')
   };
   const addBtn = qs('#addBtn'), clearBtn = qs('#clearBtn');
   const saveChangesBtn = qs('#saveChangesBtn'), cancelEditBtn = qs('#cancelEditBtn');
@@ -379,7 +515,7 @@ class MultiSelect {
   // Initialize MultiSelect
   const stepsMultiSelect = new MultiSelect(qs('#stepsMultiSelect'), {
     placeholder: 'Select production steps...',
-    onChange: () => { if(state.editingId) state.dirty = true; }
+    onChange: () => { if(state.editingId) state.dirty = true; updateCO2(); }
   });
 
   let state = { rows: [], editingId: null, dirty: false };
@@ -422,8 +558,50 @@ class MultiSelect {
     return true;
   }
 
+  // --- CO2 ESTIMATOR (BETA) ---
+  const PRODUCT_AREA_M2 = {
+    'T-Shirt': 1.50,
+    'Polo': 1.70,
+    'Shirt': 1.80,
+    'Hoodie': 2.00,
+    'Dress': 2.20,
+    'Jeans': 1.60,
+    'Jacket': 2.50,
+    'Skirt': 1.20
+  };
+  const FABRIC_EF = {
+    'Knit': 6.0,
+    'Woven': 6.5,
+    'Denim': 7.5,
+    'Nonwoven': 5.5,
+    'Sweatshirt Fleece': 6.8,
+    'Rib': 6.0
+  };
+
+  function calcCO2TotalKg({productType, fabricType, gsm, qty}){
+    const area = PRODUCT_AREA_M2[productType] ?? 1.5; // m² per piece
+    const ef = FABRIC_EF[fabricType] ?? 6.0;          // kg CO2 / kg fabric
+    const massPerPieceKg = (Math.max(gsm||0,0) * area) / 1000; // kg
+    const co2PerPiece = massPerPieceKg * ef; // kg CO2
+    return co2PerPiece * Math.max(qty||0,0);
+  }
+
+  function updateCO2(){
+    const gsm = parseInt(form.fabricWeight.value,10) || 0;
+    const qty = parseInt(form.qty.value,10) || 0;
+    const productType = form.productType.value || 'T-Shirt';
+    const fabricType = form.fabricType.value || 'Knit';
+    const total = calcCO2TotalKg({productType, fabricType, gsm, qty});
+    form.co2.value = total ? total.toFixed(2) : '';
+    const area = PRODUCT_AREA_M2[productType] ?? 1.5;
+    const ef = FABRIC_EF[fabricType] ?? 6.0;
+    const co2PerPiece = ((gsm * area)/1000) * ef;
+    form.co2Helper.textContent = `Estimated: ${co2PerPiece.toFixed(3)} kg CO₂ / piece × ${qty || 0} pcs = ${total.toFixed(2)} kg.`;
+    if(state.editingId) state.dirty = true;
+  }
+
   // --- CSV Export / Import / Template ---
-  const CSV_HEADERS = ["id","country","po","style","productType","fabricType","fabricName","fabricCode","fabricConstruction","fabricWeight","qty","steps"];
+  const CSV_HEADERS = ["id","country","po","style","productType","fabricType","fabricName","fabricCode","fabricConstruction","fabricWeight","qty","steps","co2"];
 
   function escapeCSV(value){
     if (value === null || value === undefined) return "";
@@ -436,7 +614,7 @@ class MultiSelect {
     const header = CSV_HEADERS.join(",");
     const lines = rows.map(r=>{
       const steps = (r.steps||[]).join(";");
-      const vals = [ r.id, r.country, r.po, r.style, r.productType, r.fabricType, r.fabricName, r.fabricCode, r.fabricConstruction, r.fabricWeight, r.qty, steps ];
+      const vals = [ r.id, r.country, r.po, r.style, r.productType, r.fabricType, r.fabricName, r.fabricCode, r.fabricConstruction, r.fabricWeight, r.qty, steps, r.co2 ?? 0 ];
       return vals.map(escapeCSV).join(",");
     });
     return [header, ...lines].join("\n");
@@ -444,7 +622,7 @@ class MultiSelect {
 
   function downloadCSV(){
     const csv = rowsToCSV(state.rows);
-    const bom = "\ufeff"; // UTF-8 BOM
+    const bom = "\ufeff";
     const blob = new Blob([bom + csv], {type: "text/csv;charset=utf-8;"});
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -496,6 +674,7 @@ class MultiSelect {
       obj.fabricWeight = parseInt(obj.fabricWeight,10) || 0;
       obj.qty = parseInt(obj.qty,10) || 0;
       obj.steps = obj.steps ? obj.steps.split(";").filter(Boolean) : [];
+      obj.co2 = parseFloat(obj.co2) || 0;
       rows.push(obj);
     }
     return rows;
@@ -546,6 +725,7 @@ class MultiSelect {
       else{ el.value=''; }
     });
     stepsMultiSelect.clear();
+    form.co2Helper.textContent = 'Estimated from GSM × product area × emission factor.';
   }
 
   function collectFormData(){
@@ -561,7 +741,8 @@ class MultiSelect {
       fabricConstruction: form.fabricConstruction.value,
       fabricWeight: toInt(form.fabricWeight.value),
       qty: toInt(form.qty.value),
-      steps: stepsMultiSelect.getValues()
+      steps: stepsMultiSelect.getValues(),
+      co2: parseFloat(form.co2.value) || 0
     };
   }
 
@@ -602,6 +783,8 @@ class MultiSelect {
     form.fabricWeight.value = r.fabricWeight ?? '';
     form.qty.value = r.qty ?? '';
     stepsMultiSelect.setValues(r.steps || []);
+    form.co2.value = (r.co2 ?? 0) ? Number(r.co2).toFixed(2) : '';
+    updateCO2();
 
     state.editingId = id;
     formWrap.classList.add('editing');
@@ -630,11 +813,14 @@ class MultiSelect {
     const gsms = state.rows.map(r=>r.fabricWeight).filter(n=>n>0);
     document.getElementById('mAvgGsm').textContent = gsms.length? Math.round(gsms.reduce((s,n)=>s+n,0)/gsms.length):0;
     document.getElementById('mStyles').textContent = new Set(state.rows.map(r=>r.style)).size;
+    const totalCO2 = state.rows.reduce((s,r)=> s + (Number(r.co2)||0), 0);
+    document.getElementById('mCO2').textContent = totalCO2.toFixed(2);
   }
 
   function kv(k,v){ return `<div class="kv"><div class="k">${k}</div><div class="v">${(v!==undefined&&v!==null&&v!=='')?v:'-'}</div></div>`; }
 
   function renderList(){
+    const list = document.getElementById('scorecards');
     list.innerHTML = state.rows.map(r=>{
       const header = `${r.country} · ${r.po} · ${r.style}`;
       return `<article class="scorecard" data-id="${r.id}">
@@ -656,6 +842,7 @@ class MultiSelect {
             ${kv('Fabric Weight (gsm)', r.fabricWeight)}
             ${kv('Quantity', r.qty.toLocaleString())}
             ${kv('Production Step(s)', (r.steps||[]).join(', '))}
+            ${kv('CO₂ (total kg)', (Number(r.co2)||0).toFixed(2))}
             ${kv('Country', r.country)}
             ${kv('PO No.', r.po)}
             ${kv('Style Name', r.style)}
@@ -668,7 +855,7 @@ class MultiSelect {
   function render(){ renderMetrics(); renderList(); }
 
   // Events
-  list.addEventListener('click', e=>{
+  document.getElementById('scorecards').addEventListener('click', e=>{
     const btn = e.target.closest('button'); if(!btn) return;
     const card = e.target.closest('.scorecard'); const id = card?.dataset.id; const act = btn.dataset.act;
     if(act==='delete'){ if(confirm('Delete this record?')) removeRecord(id); }
@@ -680,16 +867,19 @@ class MultiSelect {
     else if(act==='edit') editRecord(id);
   });
 
-  // Dirty mark on input changes
+  // Dirty mark on input changes + CO2 auto-update
   Object.values(form).forEach(el=>{
-    el.addEventListener('input', ()=>{ if(state.editingId) state.dirty = true; });
-    el.addEventListener('change', ()=>{ if(state.editingId) state.dirty = true; });
+    if(!el) return;
+    const handler = ()=>{ if(state.editingId) state.dirty = true; updateCO2(); };
+    el.addEventListener('input', handler);
+    el.addEventListener('change', handler);
   });
 
-  addBtn.addEventListener('click', addRecord);
-  clearBtn.addEventListener('click', ()=>{ if(confirm('Clear the form?')) clearForm(); });
-  saveChangesBtn.addEventListener('click', saveChanges);
-  cancelEditBtn.addEventListener('click', exitEdit);
+  // Buttons
+  document.getElementById('addBtn').addEventListener('click', addRecord);
+  document.getElementById('clearBtn').addEventListener('click', ()=>{ if(confirm('Clear the form?')) clearForm(); });
+  document.getElementById('saveChangesBtn').addEventListener('click', saveChanges);
+  document.getElementById('cancelEditBtn').addEventListener('click', exitEdit);
 
   // Generate code
   document.getElementById('genCodeBtn').addEventListener('click', ()=>{
@@ -715,11 +905,16 @@ class MultiSelect {
   loadDB();
   if(state.rows.length===0){
     state.rows = [
-      {id:crypto.randomUUID(), country:'Türkiye', po:'PO-12001', style:'NOVA-POLO', productType:'Polo', fabricType:'Knit', fabricConstruction:'Pique Knit', fabricWeight:220, qty:1800, steps:['Cutting','Sewing','Quality Control','Packing']},
-      {id:crypto.randomUUID(), country:'Germany', po:'PO-12002', style:'ALTA-JNS', productType:'Jeans', fabricType:'Denim', fabricConstruction:'Denim', fabricWeight:420, qty:950, steps:['Cutting','Sewing','Washing','Finishing','Packing']}
+      {id:crypto.randomUUID(), country:'Türkiye', po:'PO-12001', style:'NOVA-POLO', productType:'Polo shirt', fabricType:'Knit', fabricConstruction:'Pique Knit', fabricWeight:220, qty:1800, steps:['Cutting','Sewing','Quality Control','Packing'], co2:0},
+      {id:crypto.randomUUID(), country:'Germany', po:'PO-12002', style:'ALTA-JNS', productType:'Slim jeans', fabricType:'Denim', fabricConstruction:'Denim', fabricWeight:420, qty:950, steps:['Cutting','Sewing','Washing','Finishing','Packing'], co2:0}
     ];
+    state.rows = state.rows.map(r=>{
+      r.co2 = calcCO2TotalKg({productType:r.productType,fabricType:r.fabricType,gsm:r.fabricWeight,qty:r.qty});
+      return r;
+    });
     saveDB();
   }
+  updateCO2();
   render();
 })();
 </script>

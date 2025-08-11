@@ -409,7 +409,8 @@
         <a href="#" class="action-btn" onclick="viewAnalytics(event)">📈 View Carbon Analytics</a>
         <a href="#" class="action-btn" onclick="exportData(event)">💾 Export All Data</a>
         <a href="#" class="action-btn" onclick="viewAlerts(event)">🔔 View Alerts</a>
-        <a href="RandomOrderCreator.html" class="action-btn">🎲 Open Random Order Creator</a>
+    <a href="RandomOrderCreator.html" class="action-btn">🎲 Open Random Order Creator</a>
+
       </div>
     </div>
   </div>
@@ -450,13 +451,8 @@
         'transport':'transportdpp.html'
       };
       const url = dppUrls[dppType];
-      if(url){ 
-        // Open in the same tab
-        window.location.href = url;
-      }
-      else{ 
-        alert(`DPP mapping not found for ${dppType}`); 
-      }
+      if(url){ window.open(url,'_blank'); }
+      else{ alert(`DPP mapping not found for ${dppType}`); }
     }
 
     // --- Modal helpers ---

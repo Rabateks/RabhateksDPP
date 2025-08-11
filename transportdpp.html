@@ -112,7 +112,7 @@
         </div>
     </div>
     <!-- HREF'i JS ayarlayacak -->
-    <a class="back-to-dashboard">← Back to Main Dashboard</a>
+    <a class="back-to-dashboard" href="index.html">← Back to Main Dashboard</a>
 </header>
 
 <div class="container">
@@ -317,19 +317,7 @@
 <script>
 (function(){
     // GitHub Pages-aware Back button
-    function getBasePath(){
-        const parts = location.pathname.split('/').filter(Boolean);
-        // Proje sayfasında isen: "/repo-adi/", user/org sayfasında isen: "/"
-        return parts.length > 0 ? `/${parts[0]}/` : '/';
-    }
-    const base = getBasePath();
-    document.querySelectorAll('a.back-to-dashboard').forEach(a=>{
-        a.setAttribute('href', `${base}index.html`);
-        a.addEventListener('click', function(e){
-            e.preventDefault();
-            window.location.href = `${base}index.html`;
-        });
-    });
+
 
     // Number helpers
     const fmt1 = n => (isNaN(n)?'0':n.toFixed(1));

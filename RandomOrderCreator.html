@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rabateks DPP — Random Order Creator</title>
+  <meta name="description" content="Random Order Generation • Database Management • Production Testing">
+  <style>
+:root{
+  --bg:#ffffff;
+  --primary:#02154e;
+  --accent:#f9ba00;
+  --green:#005530;
+  --red:#D51635;
+  --navy:#02154e;
+  --light:#f8f9fa;
+  --muted:#6c757d;
+  --border:#e9ecef;
+  --shadow:rgba(0,0,0,0.1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1b2430}
+.back-link{
+  position:fixed;top:20px;right:20px;z-index:1000;
+  background:var(--green);color:white;padding:12px 20px;border-radius:8px;
+  text-decoration:none;font-weight:600;box-shadow:0 4px 12px rgba(0,85,48,0.25);
+  transition:all 0.3s ease;border:none;cursor:pointer;
+}
+.back-link:hover{ transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,85,48,0.35); }
+.back-link:active{ transform:translateY(0); }
+.header{background:var(--bg);padding:25px 0;border-bottom:2px solid var(--border);text-align:center}
+.header h1{color:var(--primary);font-size:28px;font-weight:700;margin-bottom:8px}
+.header .subtitle{color:var(--muted);font-size:16px}
+.container{max-width:1400px;margin:18px auto;padding:0 18px}
+.btn{padding:12px 24px;border:1px solid var(--border);border-radius:8px;background:var(--bg);cursor:pointer;font-weight:600;transition:all 0.2s;text-decoration:none;display:inline-block;font-size:14px}
+.btn.primary{background:var(--primary);color:white;border-color:var(--primary)}
+.btn.primary:hover{background:#1a237e;box-shadow:0 4px 12px rgba(2,21,78,0.25)}
+.btn.success{background:var(--green);color:white;border-color:var(--green)}
+.btn.success:hover{background:#004225;box-shadow:0 4px 12px rgba(0,85,48,0.25)}
+.btn.danger{background:var(--red);color:white;border-color:var(--red)}
+.btn.danger:hover{background:#b01429;box-shadow:0 4px 12px rgba(213,22,53,0.3)}
+.dashboard{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:32px}
+.dashboard .metric{background:var(--bg);padding:20px;border-radius:12px;text-align:center;border:1px solid var(--border);box-shadow:0 2px 8px var(--shadow)}
+.dashboard .metric-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.dashboard .metric-value{font-size:24px;font-weight:700;color:var(--primary)}
+.creator-section{background:#f0f8f0;padding:30px;border-radius:16px;border:2px solid var(--green);margin-bottom:30px;text-align:center}
+.creator-section h2{color:var(--green);font-size:24px;margin-bottom:15px}
+.creator-section p{color:var(--muted);font-size:16px;margin-bottom:25px}
+.creator-button{background:linear-gradient(135deg, var(--green) 0%, var(--primary) 100%);color:white;border:none;padding:18px 36px;border-radius:12px;font-size:18px;font-weight:700;cursor:pointer;transition:all 0.3s ease;box-shadow:0 4px 16px rgba(0,85,48,0.3)}
+.creator-button:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,85,48,0.4)}
+.creator-button:active{transform:translateY(0)}
+.loading{display:none;margin-top:15px;color:var(--green);font-weight:600}
+.table-container{background:var(--bg);border-radius:12px;overflow:hidden;border:1px solid var(--border);box-shadow:0 2px 8px var(--shadow)}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--border);font-size:13px}
+.table th{background:#f8fafc;font-weight:600;color:#374151;text-transform:uppercase;letter-spacing:0.5px}
+.table tr:hover{background:#f8fafc}
+.table tr:nth-child(even){background:#fafbfc}
+.generation-log{background:#fff9e6;border:2px solid #f9ba00;border-radius:12px;padding:20px;margin-bottom:20px;max-height:200px;overflow-y:auto}
+.generation-log h3{color:#d97706;margin-bottom:10px}
+.log-entry{padding:4px 0;font-family:monospace;font-size:12px;color:#374151}
+.actions-bar{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+.stats-section{display:flex;gap:12px;align-items:center}
+@media (max-width:1200px){.dashboard{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:768px){.dashboard{grid-template-columns:repeat(2,1fr)}.actions-bar{flex-direction:column;align-items:stretch}}
+@media (max-width:480px){.dashboard{grid-template:columns:1fr}}
+  </style>
+</head>
+<body>
+  <a class="back-link" href="index.html" title="Back to Main Dashboard">← Back to Main Dashboard</a>
+
+  <div class="header">
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px">
+      <div style="width:48px;height:48px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center">
+        <span style="color:white;font-weight:bold;font-size:16px">R</span>
+      </div>
+      <div>
+        <h1><span style="color:#005530;">Rabateks</span> <span style="color:#f9ba00;">DPP</span> — Random Order Creator</h1>
+        <p class="subtitle">Random Order Generation • Database Management • Production Testing</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Dashboard Metrics -->
+    <div class="dashboard">
+      <div class="metric">
+        <div class="metric-label">📋 Total Orders</div>
+        <div class="metric-value" id="totalOrders">0</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">👕 Total Quantity</div>
+        <div class="metric-value" id="totalQuantity">0</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">🎲 Last Batch</div>
+        <div class="metric-value" id="lastBatch">0</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">🌍 Countries</div>
+        <div class="metric-value" id="uniqueCountries">0</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">🏭 Product Types</div>
+        <div class="metric-value" id="uniqueProducts">0</div>
+      </div>
+    </div>
+
+    <!-- Random Order Creator -->
+    <div class="creator-section">
+      <h2>🎲 Random Order Generator</h2>
+      <p>Her tıklamada 10 adet rastgele üretim siparişi oluşturur ve veritabanına kaydeder</p>
+      
+      <button class="creator-button" onclick="createRandomOrders()" id="createBtn">
+        🚀 Create 10 Random Orders
+      </button>
+      
+      <div class="loading" id="loadingIndicator">
+        ⏳ Creating orders... Please wait...
+      </div>
+    </div>
+
+    <!-- Generation Log -->
+    <div class="generation-log" id="generationLog" style="display:none">
+      <h3>📝 Generation Log</h3>
+      <div id="logContent"></div>
+    </div>
+
+    <!-- Actions Bar -->
+    <div class="actions-bar">
+      <div class="stats-section">
+        <span style="font-weight:600;color:var(--muted)">Database Operations:</span>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="btn success" onclick="openGarmentDPP()">🚀 Open Garment DPP</button>
+        <button class="btn primary" onclick="exportToCSV()">📊 Export CSV</button>
+        <button class="btn" onclick="viewStats()">📈 View Statistics</button>
+        <button class="btn danger" onclick="clearDatabase()">🗑️ Clear Database</button>
+      </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Country</th>
+            <th>PO No.</th>
+            <th>Style Name</th>
+            <th>Product Type</th>
+            <th>Fabric Type</th>
+            <th>Fabric Name</th>
+            <th>Fabric Construction</th>
+            <th>Weight (gsm)</th>
+            <th>Quantity</th>
+            <th>Production Steps</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTableBody">
+          <!-- Orders will be populated here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+
+    // === DATABASE ===
+    let ordersDatabase = JSON.parse(localStorage.getItem('rabateks_orders_db') || '[]');
+    let orderCounter = ordersDatabase.length;
+
+    // === DATA POOLS ===
+    const DATA_POOLS = {
+      countries: [
+        'Türkiye', 'Germany', 'France', 'Italy', 'Spain', 'Netherlands', 
+        'Poland', 'UK', 'Portugal', 'Belgium', 'Austria', 'Switzerland'
+      ],
+      
+      productTypes: [
+        'Polo shirt', 'T-shirt', 'Dress shirt', 'Hoodie', 'Tank top',
+        'Slim jeans', 'Regular jeans', 'Shorts', 'Chinos', 'Blazer',
+        'Jacket', 'Sweatshirt', 'Cardigan', 'Pullover', 'Vest'
+      ],
+
+      fabricTypes: [
+        'Cotton', 'Knit', 'Woven', 'Denim', 'Polyester', 
+        'Wool', 'Linen', 'Silk', 'Spandex', 'Rayon',
+        'Bamboo', 'Modal', 'Viscose', 'Nylon'
+      ],
+
+      fabricNames: [
+        'Single Jersey', 'Pique Knit', 'Fleece', 'French Terry', 'Rib Knit',
+        'Twill', 'Canvas', 'Poplin', 'Oxford', 'Chambray',
+        'Denim', 'Corduroy', 'Velvet', 'Satin', 'Chiffon'
+      ],
+
+      fabricConstructions: [
+        'Single Jersey', 'Double Jersey', 'Interlock', 'Rib', 'Pique',
+        'Plain Weave', 'Twill Weave', 'Satin Weave', 'Oxford Weave',
+        'Poplin Weave', 'Canvas Weave', 'Denim Weave'
+      ],
+
+      productionSteps: [
+        'Pattern Making', 'Cutting', 'Sewing', 'Embroidery', 'Printing',
+        'Dyeing', 'Washing', 'Stone Washing', 'Pressing', 'Ironing',
+        'Finishing', 'Quality Control', 'Packing', 'Labeling', 'Inspection'
+      ],
+
+      stylesPrefixes: [
+        'NOVA', 'ALTA', 'METRO', 'URBAN', 'CLASSIC', 'ELITE', 'PRIME',
+        'ROYAL', 'SIGMA', 'APEX', 'TITAN', 'SWIFT', 'BOLD', 'PURE'
+      ],
+
+      stylesSuffixes: [
+        'PRO', 'TSH', 'JNS', 'HDD', 'BLZ', 'PLO', 'DLX', 'MAX',
+        'ECO', 'LUX', 'FIT', 'SLIM', 'WIDE', 'SOFT', 'FLEX'
+      ]
+    };
+
+    // === UTILITY FUNCTIONS ===
+    function randomChoice(array) {
+      return array[Math.floor(Math.random() * array.length)];
+    }
+
+    function randomNumber(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function generatePONumber() {
+      return `PO-${randomNumber(10000, 99999)}`;
+    }
+
+    function generateStyleName() {
+      const prefix = randomChoice(DATA_POOLS.stylesPrefixes);
+      const suffix = randomChoice(DATA_POOLS.stylesSuffixes);
+      return `${prefix}-${suffix}`;
+    }
+
+    function generateFabricWeight(fabricType) {
+      const weights = {
+        'Cotton': [160, 180, 200, 220, 240],
+        'Knit': [140, 160, 180, 200, 220],
+        'Woven': [120, 140, 160, 180, 200],
+        'Denim': [300, 350, 400, 450, 500],
+        'Polyester': [100, 120, 140, 160, 180],
+        'Wool': [200, 250, 300, 350, 400],
+        'default': [160, 180, 200, 220, 240]
+      };
+      
+      const weightOptions = weights[fabricType] || weights.default;
+      return randomChoice(weightOptions);
+    }
+
+    function generateQuantity() {
+      const ranges = [
+        [100, 500],   // Small batch
+        [500, 1500],  // Medium batch  
+        [1500, 3000], // Large batch
+        [3000, 5000]  // XL batch
+      ];
+      
+      const [min, max] = randomChoice(ranges);
+      return randomNumber(min, max);
+    }
+
+    function generateProductionSteps() {
+      const stepCount = randomNumber(3, 7);
+      const shuffled = [...DATA_POOLS.productionSteps].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, stepCount);
+    }
+
+    // === ORDER CREATION ===
+    function createSingleRandomOrder() {
+      const country = randomChoice(DATA_POOLS.countries);
+      const productType = randomChoice(DATA_POOLS.productTypes);
+      const fabricType = randomChoice(DATA_POOLS.fabricTypes);
+      const fabricName = randomChoice(DATA_POOLS.fabricNames);
+      const fabricConstruction = randomChoice(DATA_POOLS.fabricConstructions);
+      const fabricWeight = generateFabricWeight(fabricType);
+      const quantity = generateQuantity();
+      const productionSteps = generateProductionSteps();
+
+      const order = {
+        id: ++orderCounter,
+        country: country,
+        poNumber: generatePONumber(),
+        styleName: generateStyleName(),
+        productType: productType,
+        fabricType: fabricType,
+        fabricName: fabricName,
+        fabricConstruction: fabricConstruction,
+        fabricWeight: fabricWeight,
+        quantity: quantity,
+        productionSteps: productionSteps,
+        createdAt: new Date().toISOString(),
+        createdTime: new Date().toLocaleString('tr-TR')
+      };
+
+      return order;
+    }
+
+    function createRandomOrders() {
+      const createBtn = document.getElementById('createBtn');
+      const loadingIndicator = document.getElementById('loadingIndicator');
+      const logDiv = document.getElementById('generationLog');
+      const logContent = document.getElementById('logContent');
+
+      // Show loading
+      createBtn.disabled = true;
+      loadingIndicator.style.display = 'block';
+      logDiv.style.display = 'block';
+      logContent.innerHTML = '';
+
+      // Log start
+      logContent.innerHTML += `<div class="log-entry">🚀 Starting generation of 10 random orders...</div>`;
+
+      // Create orders with delay for visual effect
+      let createdCount = 0;
+      const batchStartTime = Date.now();
+
+      const createOrderInterval = setInterval(() => {
+        const order = createSingleRandomOrder();
+        ordersDatabase.unshift(order); // Add to beginning
+        createdCount++;
+
+        // Log each order
+        logContent.innerHTML += `<div class="log-entry">${createdCount}/10: ${order.styleName} - ${order.country} - ${order.quantity} pcs</div>`;
+        logContent.scrollTop = logContent.scrollHeight;
+
+        if (createdCount >= 10) {
+          clearInterval(createOrderInterval);
+          
+          // Save to database
+          saveDatabase();
+          
+          // AUTO-POPULATE GARMENT DPP
+          transferToGarmentDPP();
+          
+          // Final log
+          const duration = ((Date.now() - batchStartTime) / 1000).toFixed(1);
+          logContent.innerHTML += `<div class="log-entry">✅ Successfully created 10 orders in ${duration}s</div>`;
+          logContent.innerHTML += `<div class="log-entry">💾 Orders saved to database</div>`;
+          logContent.innerHTML += `<div class="log-entry">🔄 Data transferred to Garment DPP</div>`;
+
+          // Update UI
+          updateMetrics();
+          renderOrdersTable();
+
+          // Reset button
+          createBtn.disabled = false;
+          loadingIndicator.style.display = 'none';
+
+          // Auto-hide log after 3 seconds
+          setTimeout(() => {
+            logDiv.style.display = 'none';
+          }, 3000);
+        }
+      }, 200); // 200ms delay between each order
+    }
+
+    // === AUTO-POPULATE GARMENT DPP ===
+    function transferToGarmentDPP() {
+      // Get latest 10 orders (the ones just created)
+      const latestOrders = ordersDatabase.slice(0, 10);
+      
+      // Convert to Garment DPP format
+      const garmentOrders = latestOrders.map(order => ({
+        id: crypto.randomUUID(),
+        country: order.country,
+        po: order.poNumber,
+        style: order.styleName,
+        productType: order.productType,
+        fabricType: order.fabricType,
+        fabricName: order.fabricName,
+        fabricCode: generateGarmentFabricCode(order.fabricType, order.fabricWeight),
+        fabricConstruction: order.fabricConstruction,
+        fabricWeight: order.fabricWeight,
+        qty: order.quantity,
+        steps: order.productionSteps,
+        co2: calculateCO2(order.productType, order.fabricType, order.fabricWeight, order.quantity)
+      }));
+
+      // Save to shared storage for Garment DPP
+      localStorage.setItem('garment_dpp_import_data', JSON.stringify(garmentOrders));
+      localStorage.setItem('garment_dpp_import_timestamp', Date.now().toString());
+      
+      console.log('🔄 Data prepared for Garment DPP transfer:', garmentOrders.length, 'orders');
+    }
+
+    function generateGarmentFabricCode(fabricType, weight) {
+      const prefixes = { 
+        'Cotton': 'CT', 'Knit': 'KN', 'Woven': 'WV', 'Denim': 'DN', 
+        'Polyester': 'PL', 'Wool': 'WL', 'Linen': 'LN', 'Silk': 'SK', 
+        'Spandex': 'SP', 'Rayon': 'RY' 
+      };
+      const prefix = prefixes[fabricType] || 'XX';
+      const suffix = Math.random().toString(36).substr(2, 2).toUpperCase();
+      return `${suffix}-${weight}-${prefix}`;
+    }
+
+    function calculateCO2(productType, fabricType, weight, quantity) {
+      // CO2 calculation based on Garment DPP logic
+      const FABRIC_EF = {
+        'Cotton': 5.9, 'Knit': 4.3, 'Woven': 3.8, 'Denim': 7.2, 'Polyester': 9.5,
+        'Wool': 10.4, 'Linen': 1.8, 'Silk': 11.5, 'Spandex': 8.9, 'Rayon': 6.7
+      };
+      
+      const productAreas = {
+        'T-shirt': 0.8, 'Polo shirt': 0.9, 'Dress shirt': 1.0, 'Hoodie': 1.2, 'Tank top': 0.6,
+        'Slim jeans': 1.1, 'Regular jeans': 1.2, 'Shorts': 0.7, 'Chinos': 1.0,
+        'Blazer': 1.5, 'Jacket': 1.8, 'Sweatshirt': 1.1
+      };
+      
+      const area = productAreas[productType] || 1.0;
+      const massPerPieceKg = (weight * area) / 1000;
+      const ef = FABRIC_EF[fabricType] || 6.0;
+      const co2PerPiece = massPerPieceKg * ef;
+      
+      return (co2PerPiece * quantity).toFixed(2);
+    }
+
+    // === NAVIGATION TO GARMENT DPP ===
+    function openGarmentDPP() {
+      // Open Garment DPP in same tab
+      window.location.href = 'GarmentDPP.html';
+    }
+
+    // === DATABASE OPERATIONS ===
+    function saveDatabase() {
+      localStorage.setItem('rabateks_orders_db', JSON.stringify(ordersDatabase));
+    }
+
+    function clearDatabase() {
+      if (confirm('🗑️ Are you sure you want to clear all orders from database?\n\nThis action cannot be undone!')) {
+        ordersDatabase = [];
+        orderCounter = 0;
+        saveDatabase();
+        updateMetrics();
+        renderOrdersTable();
+        
+        // Show log
+        const logDiv = document.getElementById('generationLog');
+        const logContent = document.getElementById('logContent');
+        logDiv.style.display = 'block';
+        logContent.innerHTML = '<div class="log-entry">🗑️ Database cleared successfully</div>';
+        
+        setTimeout(() => {
+          logDiv.style.display = 'none';
+        }, 2000);
+      }
+    }
+
+    // === UI UPDATES ===
+    function updateMetrics() {
+      const totalOrders = ordersDatabase.length;
+      const totalQuantity = ordersDatabase.reduce((sum, order) => sum + order.quantity, 0);
+      const uniqueCountries = new Set(ordersDatabase.map(order => order.country)).size;
+      const uniqueProducts = new Set(ordersDatabase.map(order => order.productType)).size;
+
+      document.getElementById('totalOrders').textContent = totalOrders.toLocaleString();
+      document.getElementById('totalQuantity').textContent = totalQuantity.toLocaleString();
+      document.getElementById('lastBatch').textContent = '10';
+      document.getElementById('uniqueCountries').textContent = uniqueCountries;
+      document.getElementById('uniqueProducts').textContent = uniqueProducts;
+    }
+
+    function renderOrdersTable() {
+      const tbody = document.getElementById('ordersTableBody');
+      
+      if (ordersDatabase.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:40px;color:var(--muted)">No orders created yet. Click "Create 10 Random Orders" to get started!</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = ordersDatabase.map((order, index) => `
+        <tr>
+          <td style="font-weight:600">${order.id}</td>
+          <td>${order.country}</td>
+          <td style="font-family:monospace">${order.poNumber}</td>
+          <td style="font-weight:600;color:var(--primary)">${order.styleName}</td>
+          <td>${order.productType}</td>
+          <td>${order.fabricType}</td>
+          <td>${order.fabricName}</td>
+          <td>${order.fabricConstruction}</td>
+          <td style="text-align:center">${order.fabricWeight}</td>
+          <td style="text-align:right;font-weight:600">${order.quantity.toLocaleString()}</td>
+          <td style="font-size:11px">${order.productionSteps.join(', ')}</td>
+          <td style="font-size:11px;color:var(--muted)">${order.createdTime}</td>
+        </tr>
+      `).join('');
+    }
+
+    // === EXPORT FUNCTIONS ===
+    function exportToCSV() {
+      if (ordersDatabase.length === 0) {
+        alert('No orders to export!');
+        return;
+      }
+
+      const headers = [
+        'ID', 'Country', 'PO Number', 'Style Name', 'Product Type', 
+        'Fabric Type', 'Fabric Name', 'Fabric Construction', 'Fabric Weight (gsm)', 
+        'Quantity', 'Production Steps', 'Created At'
+      ];
+
+      const csvContent = [
+        headers.join(','),
+        ...ordersDatabase.map(order => [
+          order.id,
+          `"${order.country}"`,
+          `"${order.poNumber}"`,
+          `"${order.styleName}"`,
+          `"${order.productType}"`,
+          `"${order.fabricType}"`,
+          `"${order.fabricName}"`,
+          `"${order.fabricConstruction}"`,
+          order.fabricWeight,
+          order.quantity,
+          `"${order.productionSteps.join('; ')}"`,
+          `"${order.createdTime}"`
+        ].join(','))
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `rabateks-orders-${new Date().toISOString().slice(0,10)}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function viewStats() {
+      if (ordersDatabase.length === 0) {
+        alert('No orders in database for statistics!');
+        return;
+      }
+
+      const stats = {
+        totalOrders: ordersDatabase.length,
+        totalQuantity: ordersDatabase.reduce((sum, order) => sum + order.quantity, 0),
+        avgQuantity: Math.round(ordersDatabase.reduce((sum, order) => sum + order.quantity, 0) / ordersDatabase.length),
+        countriesCount: new Set(ordersDatabase.map(order => order.country)).size,
+        productsCount: new Set(ordersDatabase.map(order => order.productType)).size,
+        fabricsCount: new Set(ordersDatabase.map(order => order.fabricType)).size,
+        avgWeight: Math.round(ordersDatabase.reduce((sum, order) => sum + order.fabricWeight, 0) / ordersDatabase.length)
+      };
+
+      const message = `📊 DATABASE STATISTICS\n\n` +
+        `Total Orders: ${stats.totalOrders.toLocaleString()}\n` +
+        `Total Quantity: ${stats.totalQuantity.toLocaleString()} pieces\n` +
+        `Average Quantity: ${stats.avgQuantity.toLocaleString()} pieces/order\n` +
+        `Unique Countries: ${stats.countriesCount}\n` +
+        `Unique Product Types: ${stats.productsCount}\n` +
+        `Unique Fabric Types: ${stats.fabricsCount}\n` +
+        `Average Fabric Weight: ${stats.avgWeight} gsm`;
+
+      alert(message);
+    }
+
+    // === INITIALIZATION ===
+    document.addEventListener('DOMContentLoaded', () => {
+      updateMetrics();
+      renderOrdersTable();
+      
+      console.log('🎲 Rabateks Random Order Creator loaded successfully!');
+      console.log(`📊 Database contains ${ordersDatabase.length} orders`);
+    });
+
+    // === KEYBOARD SHORTCUTS ===
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        switch(e.key) {
+          case 'Enter':
+            e.preventDefault();
+            createRandomOrders();
+            break;
+          case 'e':
+            e.preventDefault();
+            exportToCSV();
+            break;
+          case 's':
+            e.preventDefault();
+            viewStats();
+            break;
+        }
+      }
+    });
+  </script>
+</body>
+</html>
