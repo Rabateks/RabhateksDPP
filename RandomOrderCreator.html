@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rabateks DPP — Random Order Creator</title>
+  <title>Rabateks DPP – Random Order Creator</title>
   <meta name="description" content="Random Order Generation • Database Management • Production Testing">
   <style>
 :root{
@@ -39,6 +39,8 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
 .btn.success:hover{background:#004225;box-shadow:0 4px 12px rgba(0,85,48,0.25)}
 .btn.danger{background:var(--red);color:white;border-color:var(--red)}
 .btn.danger:hover{background:#b01429;box-shadow:0 4px 12px rgba(213,22,53,0.3)}
+.btn.accent{background:var(--accent);color:var(--primary);border-color:var(--accent)}
+.btn.accent:hover{background:#e0a600;box-shadow:0 4px 12px rgba(249,186,0,0.3)}
 .dashboard{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:32px}
 .dashboard .metric{background:var(--bg);padding:20px;border-radius:12px;text-align:center;border:1px solid var(--border);box-shadow:0 2px 8px var(--shadow)}
 .dashboard .metric-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
@@ -75,7 +77,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
         <span style="color:white;font-weight:bold;font-size:16px">R</span>
       </div>
       <div>
-        <h1><span style="color:#005530;">Rabateks</span> <span style="color:#f9ba00;">DPP</span> — Random Order Creator</h1>
+        <h1><span style="color:#005530;">Rabateks</span> <span style="color:#f9ba00;">DPP</span> – Random Order Creator</h1>
         <p class="subtitle">Random Order Generation • Database Management • Production Testing</p>
       </div>
     </div>
@@ -132,6 +134,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
         <span style="font-weight:600;color:var(--muted)">Database Operations:</span>
       </div>
       <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="btn accent" onclick="pushOrdersToGarmentDPP()">📤 Push Orders</button>
         <button class="btn success" onclick="openGarmentDPP()">🚀 Open Garment DPP</button>
         <button class="btn primary" onclick="exportToCSV()">📊 Export CSV</button>
         <button class="btn" onclick="viewStats()">📈 View Statistics</button>
@@ -496,6 +499,53 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
       const co2PerPiece = massPerPieceKg * ef;
       
       return (co2PerPiece * quantity).toFixed(2);
+    }
+
+    // === PUSH ORDERS TO GARMENT DPP ===
+    function pushOrdersToGarmentDPP() {
+      if (ordersDatabase.length === 0) {
+        alert('📭 No orders to push!\n\nCreate some orders first by clicking "Create 10 Random Orders".');
+        return;
+      }
+
+      const logDiv = document.getElementById('generationLog');
+      const logContent = document.getElementById('logContent');
+
+      // Show log
+      logDiv.style.display = 'block';
+      logContent.innerHTML = '';
+      logContent.innerHTML += `<div class="log-entry">📤 Pushing ${ordersDatabase.length} orders to Garment DPP...</div>`;
+
+      // Convert all orders to Garment DPP format
+      const garmentOrders = ordersDatabase.map(order => ({
+        id: crypto.randomUUID(),
+        country: order.country,
+        po: order.poNumber,
+        style: order.styleName,
+        productType: order.productType,
+        fabricType: order.fabricType,
+        fabricName: order.fabricName,
+        fabricCode: generateGarmentFabricCode(order.fabricType, order.fabricWeight),
+        fabricConstruction: order.fabricConstruction,
+        fabricWeight: order.fabricWeight,
+        qty: order.quantity,
+        steps: order.productionSteps,
+        co2: calculateCO2(order.productType, order.fabricType, order.fabricWeight, order.quantity)
+      }));
+
+      // Save to shared storage for Garment DPP
+      localStorage.setItem('garment_dpp_import_data', JSON.stringify(garmentOrders));
+      localStorage.setItem('garment_dpp_import_timestamp', Date.now().toString());
+
+      logContent.innerHTML += `<div class="log-entry">✅ Successfully pushed ${garmentOrders.length} orders</div>`;
+      logContent.innerHTML += `<div class="log-entry">🎯 Ready for import in Garment DPP</div>`;
+
+      console.log('📤 Data pushed to Garment DPP:', garmentOrders.length, 'orders');
+
+      // Auto-hide log after 2 seconds
+      setTimeout(() => {
+        logDiv.style.display = 'none';
+      }, 2000);
     }
 
     // === NAVIGATION TO GARMENT DPP ===
