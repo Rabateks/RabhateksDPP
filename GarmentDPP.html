@@ -142,6 +142,14 @@ input[readonly]{background:#f7f9fb;color:#4b5563;border-style:dashed}
         </select>
       </div>
 
+      <div class="field">
+        <label>Production Facility</label>
+        <select id="productionFacility">
+          <option>Rabateks Main Factory</option><option>Rabateks Facility 2</option><option>Partner Factory A</option>
+          <option>Partner Factory B</option><option>External Contractor 1</option><option>External Contractor 2</option>
+        </select>
+      </div>
+
       <div class="field"><label>PO No.</label><input id="po" type="text" placeholder="e.g., PO-24567"></div>
       <div class="field"><label>Style Name</label><input id="style" type="text" placeholder="e.g., AURORA-TSH"></div>
 
@@ -496,6 +504,7 @@ class MultiSelect {
   const formWrap = qs('#formWrap');
   const form = {
     country: qs('#country'),
+    productionFacility: qs('#productionFacility'),
     po: qs('#po'),
     style: qs('#style'),
     productType: qs('#productType'),
@@ -601,7 +610,7 @@ class MultiSelect {
   }
 
   // --- CSV Export / Import / Template ---
-  const CSV_HEADERS = ["id","country","po","style","productType","fabricType","fabricName","fabricCode","fabricConstruction","fabricWeight","qty","steps","co2"];
+  const CSV_HEADERS = ["id","country","productionFacility","po","style","productType","fabricType","fabricName","fabricCode","fabricConstruction","fabricWeight","qty","steps","co2"];
 
   function escapeCSV(value){
     if (value === null || value === undefined) return "";
@@ -614,7 +623,7 @@ class MultiSelect {
     const header = CSV_HEADERS.join(",");
     const lines = rows.map(r=>{
       const steps = (r.steps||[]).join(";");
-      const vals = [ r.id, r.country, r.po, r.style, r.productType, r.fabricType, r.fabricName, r.fabricCode, r.fabricConstruction, r.fabricWeight, r.qty, steps, r.co2 ?? 0 ];
+      const vals = [ r.id, r.country, r.productionFacility, r.po, r.style, r.productType, r.fabricType, r.fabricName, r.fabricCode, r.fabricConstruction, r.fabricWeight, r.qty, steps, r.co2 ?? 0 ];
       return vals.map(escapeCSV).join(",");
     });
     return [header, ...lines].join("\n");
@@ -732,6 +741,7 @@ class MultiSelect {
     return {
       id: state.editingId || crypto.randomUUID(),
       country: form.country.value,
+      productionFacility: form.productionFacility.value,
       po: form.po.value.trim(),
       style: form.style.value.trim(),
       productType: form.productType.value,
@@ -749,7 +759,7 @@ class MultiSelect {
   function addRecord(){
     const row = collectFormData();
     if(!row.po || !row.style){ alert('Please enter PO No. and Style Name.'); return; }
-    if(!row.country || !row.productType || !row.fabricType || !row.fabricConstruction){ alert('Please select Country, Product Type, Fabric Type and Fabric Construction.'); return; }
+    if(!row.country || !row.productionFacility || !row.productType || !row.fabricType || !row.fabricConstruction){ alert('Please select Country, Production Facility, Product Type, Fabric Type and Fabric Construction.'); return; }
     if(!validateManualFields(row)) return;
     const key = (row.po+'|'+row.style).toLowerCase();
     const hasDup = state.rows.some(r => (r.po+'|'+r.style).toLowerCase() === key);
@@ -773,6 +783,7 @@ class MultiSelect {
     }
     const r = state.rows.find(x=>x.id===id); if(!r) return;
     form.country.value = r.country || '';
+    form.productionFacility.value = r.productionFacility || '';
     form.po.value = r.po || '';
     form.style.value = r.style || '';
     form.productType.value = r.productType || '';
@@ -844,6 +855,7 @@ class MultiSelect {
             ${kv('Production Step(s)', (r.steps||[]).join(', '))}
             ${kv('CO₂ (total kg)', (Number(r.co2)||0).toFixed(2))}
             ${kv('Country', r.country)}
+            ${kv('Production Facility', r.productionFacility)}
             ${kv('PO No.', r.po)}
             ${kv('Style Name', r.style)}
           </div>
@@ -905,8 +917,8 @@ class MultiSelect {
   loadDB();
   if(state.rows.length===0){
     state.rows = [
-      {id:crypto.randomUUID(), country:'Türkiye', po:'PO-12001', style:'NOVA-POLO', productType:'Polo shirt', fabricType:'Knit', fabricConstruction:'Pique Knit', fabricWeight:220, qty:1800, steps:['Cutting','Sewing','Quality Control','Packing'], co2:0},
-      {id:crypto.randomUUID(), country:'Germany', po:'PO-12002', style:'ALTA-JNS', productType:'Slim jeans', fabricType:'Denim', fabricConstruction:'Denim', fabricWeight:420, qty:950, steps:['Cutting','Sewing','Washing','Finishing','Packing'], co2:0}
+      {id:crypto.randomUUID(), country:'Türkiye', productionFacility:'Rabateks Main Factory', po:'PO-12001', style:'NOVA-POLO', productType:'Polo shirt', fabricType:'Knit', fabricConstruction:'Pique Knit', fabricWeight:220, qty:1800, steps:['Cutting','Sewing','Quality Control','Packing'], co2:0},
+      {id:crypto.randomUUID(), country:'Germany', productionFacility:'Partner Factory A', po:'PO-12002', style:'ALTA-JNS', productType:'Slim jeans', fabricType:'Denim', fabricConstruction:'Denim', fabricWeight:420, qty:950, steps:['Cutting','Sewing','Washing','Finishing','Packing'], co2:0}
     ];
     state.rows = state.rows.map(r=>{
       r.co2 = calcCO2TotalKg({productType:r.productType,fabricType:r.fabricType,gsm:r.fabricWeight,qty:r.qty});

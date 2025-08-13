@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rabateks DPP — Manufacturer Database</title>
+  <meta name="description" content="Manufacturer Database Management • Facility Information • Production Capacity">
+  <style>
+:root{
+  --bg:#ffffff;
+  --primary:#02154e;
+  --accent:#f9ba00;
+  --green:#005530;
+  --red:#D51635;
+  --navy:#02154e;
+  --light:#f8f9fa;
+  --muted:#6c757d;
+  --border:#e9ecef;
+  --shadow:rgba(0,0,0,0.1);
+  --card:#ffffff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#1b2430}
+.back-link{
+  position:fixed;top:20px;right:20px;z-index:1000;
+  background:var(--green);color:white;padding:12px 20px;border-radius:8px;
+  text-decoration:none;font-weight:600;box-shadow:0 4px 12px rgba(0,85,48,0.25);
+  transition:all 0.3s ease;border:none;cursor:pointer;
+}
+.back-link:hover{ transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,85,48,0.35); }
+.back-link:active{ transform:translateY(0); }
+.header{background:var(--bg);padding:25px 0;border-bottom:2px solid var(--border);text-align:center}
+.header h1{color:var(--primary);font-size:28px;font-weight:700;margin-bottom:8px}
+.header .subtitle{color:var(--muted);font-size:16px}
+.container{max-width:1400px;margin:18px auto;padding:0 18px}
+.btn{padding:12px 24px;border:1px solid var(--border);border-radius:8px;background:var(--bg);cursor:pointer;font-weight:600;transition:all 0.2s;text-decoration:none;display:inline-block;font-size:14px}
+.btn.primary{background:var(--primary);color:white;border-color:var(--primary)}
+.btn.primary:hover{background:#1a237e;box-shadow:0 4px 12px rgba(2,21,78,0.25)}
+.btn.success{background:var(--green);color:white;border-color:var(--green)}
+.btn.success:hover{background:#004225;box-shadow:0 4px 12px rgba(0,85,48,0.25)}
+.btn.danger{background:var(--red);color:white;border-color:var(--red)}
+.btn.danger:hover{background:#b01429;box-shadow:0 4px 12px rgba(213,22,53,0.3)}
+.form-section{background:var(--card);border-radius:12px;padding:24px;margin-bottom:24px;border:1px solid var(--border);box-shadow:0 2px 8px var(--shadow)}
+.form-row{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.field{flex:1;min-width:200px}
+.field label{display:block;margin-bottom:6px;font-weight:600;color:var(--primary)}
+.field input,.field select,.field textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:6px;font-size:14px}
+.field textarea{min-height:80px;resize:vertical}
+.table-container{background:var(--card);border-radius:12px;overflow:hidden;border:1px solid var(--border);box-shadow:0 2px 8px var(--shadow)}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--border);font-size:13px}
+.table th{background:#f8fafc;font-weight:600;color:#374151;text-transform:uppercase;letter-spacing:0.5px}
+.table tr:hover{background:#f8fafc}
+.table tr:nth-child(even){background:#fafbfc}
+.actions-bar{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+.dashboard{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.dashboard .metric{background:var(--card);padding:20px;border-radius:12px;text-align:center;border:1px solid var(--border);box-shadow:0 2px 8px var(--shadow)}
+.dashboard .metric-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.dashboard .metric-value{font-size:24px;font-weight:700;color:var(--primary)}
+.import-section{background:#fff9e6;border:2px solid #f9ba00;border-radius:12px;padding:20px;margin-bottom:20px}
+.import-section h3{color:#d97706;margin-bottom:10px}
+@media (max-width:1200px){.dashboard{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:768px){.dashboard{grid-template-columns:repeat(2,1fr)}.actions-bar{flex-direction:column;align-items:stretch}}
+@media (max-width:480px){.dashboard{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <a class="back-link" href="index.html" title="Back to Main Dashboard">← Back to Main Dashboard</a>
+
+  <div class="header">
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px">
+      <div style="width:48px;height:48px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center">
+        <span style="color:white;font-weight:bold;font-size:16px">M</span>
+      </div>
+      <div>
+        <h1><span style="color:#005530;">Rabateks</span> <span style="color:#f9ba00;">DPP</span> — Manufacturer Database</h1>
+        <p class="subtitle">Manufacturer Database Management • Facility Information • Production Capacity</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Import Section -->
+    <div class="import-section">
+      <h3>📁 Import from MangoApparelFacilities.xls</h3>
+      <p>To import data from MangoApparelFacilities.xls:</p>
+      <ol>
+        <li>Open the Excel file and copy the data</li>
+        <li>Convert to CSV format or paste data below</li>
+        <li>Use the import function to load manufacturer data</li>
+      </ol>
+      <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" style="margin:10px 0">
+      <button class="btn primary" onclick="importFile()">Import File</button>
+    </div>
+
+    <!-- Dashboard Metrics -->
+    <div class="dashboard">
+      <div class="metric">
+        <div class="metric-label">🏭 Total Manufacturers</div>
+        <div class="metric-value" id="totalManufacturers">0</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">🌍 Countries</div>
+        <div class="metric-value" id="totalCountries">0</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">🏗️ Total Capacity</div>
+        <div class="metric-value" id="totalCapacity">0</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">✅ Active Facilities</div>
+        <div class="metric-value" id="activeFacilities">0</div>
+      </div>
+    </div>
+
+    <!-- Add/Edit Form -->
+    <div class="form-section">
+      <h3>Add New Manufacturer</h3>
+      <div class="form-row">
+        <div class="field">
+          <label>Manufacturer Name</label>
+          <input type="text" id="manufacturerName" placeholder="e.g., Rabateks Textile">
+        </div>
+        <div class="field">
+          <label>Facility Code</label>
+          <input type="text" id="facilityCode" placeholder="e.g., RAB-001">
+        </div>
+        <div class="field">
+          <label>Country</label>
+          <select id="country">
+            <option>Türkiye</option><option>Germany</option><option>Netherlands</option>
+            <option>Spain</option><option>United Kingdom</option><option>Italy</option><option>Portugal</option>
+            <option>China</option><option>Bangladesh</option><option>Vietnam</option><option>India</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>City</label>
+          <input type="text" id="city" placeholder="e.g., Istanbul">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Production Capacity (pcs/month)</label>
+          <input type="number" id="capacity" placeholder="e.g., 50000">
+        </div>
+        <div class="field">
+          <label>Specialization</label>
+          <select id="specialization">
+            <option>Woven Garments</option><option>Knit Garments</option><option>Denim</option>
+            <option>Outerwear</option><option>Underwear</option><option>Sportswear</option>
+            <option>Formal Wear</option><option>Casual Wear</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <select id="status">
+            <option>Active</option><option>Inactive</option><option>Under Review</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Contact Email</label>
+          <input type="email" id="email" placeholder="e.g., contact@manufacturer.com">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Address</label>
+          <textarea id="address" placeholder="Full address of the facility"></textarea>
+        </div>
+        <div class="field">
+          <label>Certifications</label>
+          <textarea id="certifications" placeholder="e.g., OEKO-TEX, GOTS, ISO 9001"></textarea>
+        </div>
+      </div>
+      <div class="actions-bar">
+        <button class="btn success" onclick="addManufacturer()">Add Manufacturer</button>
+        <button class="btn" onclick="clearForm()">Clear Form</button>
+        <button class="btn primary" onclick="exportCSV()">Export CSV</button>
+      </div>
+    </div>
+
+    <!-- Manufacturers Table -->
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Manufacturer Name</th>
+            <th>Facility Code</th>
+            <th>Country</th>
+            <th>City</th>
+            <th>Capacity</th>
+            <th>Specialization</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="manufacturersTableBody">
+          <!-- Manufacturers will be populated here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // Database
+    let manufacturersDatabase = [];
+
+    // Sample data
+    const sampleData = [
+      {
+        id: 1,
+        manufacturerName: 'Rabateks Main Factory',
+        facilityCode: 'RAB-001',
+        country: 'Türkiye',
+        city: 'Istanbul',
+        capacity: 75000,
+        specialization: 'Woven Garments',
+        status: 'Active',
+        email: 'main@rabateks.com',
+        address: 'Industrial Zone, Istanbul, Turkey',
+        certifications: 'OEKO-TEX, ISO 9001, GOTS'
+      },
+      {
+        id: 2,
+        manufacturerName: 'Partner Factory A',
+        facilityCode: 'PFA-001',
+        country: 'Germany',
+        city: 'Berlin',
+        capacity: 45000,
+        specialization: 'Knit Garments',
+        status: 'Active',
+        email: 'contact@partnera.de',
+        address: 'Manufacturing District, Berlin, Germany',
+        certifications: 'OEKO-TEX, ISO 14001'
+      }
+    ];
+
+    // Initialize
+    function init() {
+      manufacturersDatabase = [...sampleData];
+      updateMetrics();
+      renderTable();
+    }
+
+    // Add manufacturer
+    function addManufacturer() {
+      const manufacturer = {
+        id: Date.now(),
+        manufacturerName: document.getElementById('manufacturerName').value,
+        facilityCode: document.getElementById('facilityCode').value,
+        country: document.getElementById('country').value,
+        city: document.getElementById('city').value,
+        capacity: parseInt(document.getElementById('capacity').value) || 0,
+        specialization: document.getElementById('specialization').value,
+        status: document.getElementById('status').value,
+        email: document.getElementById('email').value,
+        address: document.getElementById('address').value,
+        certifications: document.getElementById('certifications').value
+      };
+
+      if (!manufacturer.manufacturerName || !manufacturer.facilityCode) {
+        alert('Please enter Manufacturer Name and Facility Code.');
+        return;
+      }
+
+      manufacturersDatabase.push(manufacturer);
+      updateMetrics();
+      renderTable();
+      clearForm();
+    }
+
+    // Clear form
+    function clearForm() {
+      document.getElementById('manufacturerName').value = '';
+      document.getElementById('facilityCode').value = '';
+      document.getElementById('city').value = '';
+      document.getElementById('capacity').value = '';
+      document.getElementById('email').value = '';
+      document.getElementById('address').value = '';
+      document.getElementById('certifications').value = '';
+    }
+
+    // Update metrics
+    function updateMetrics() {
+      const totalManufacturers = manufacturersDatabase.length;
+      const totalCountries = new Set(manufacturersDatabase.map(m => m.country)).size;
+      const totalCapacity = manufacturersDatabase.reduce((sum, m) => sum + m.capacity, 0);
+      const activeFacilities = manufacturersDatabase.filter(m => m.status === 'Active').length;
+
+      document.getElementById('totalManufacturers').textContent = totalManufacturers;
+      document.getElementById('totalCountries').textContent = totalCountries;
+      document.getElementById('totalCapacity').textContent = totalCapacity.toLocaleString();
+      document.getElementById('activeFacilities').textContent = activeFacilities;
+    }
+
+    // Render table
+    function renderTable() {
+      const tbody = document.getElementById('manufacturersTableBody');
+      tbody.innerHTML = manufacturersDatabase.map((manufacturer, index) => `
+        <tr>
+          <td style="font-weight:600">${index + 1}</td>
+          <td style="font-weight:600;color:var(--primary)">${manufacturer.manufacturerName}</td>
+          <td style="font-family:monospace">${manufacturer.facilityCode}</td>
+          <td>${manufacturer.country}</td>
+          <td>${manufacturer.city}</td>
+          <td style="text-align:right;font-weight:600">${manufacturer.capacity.toLocaleString()}</td>
+          <td>${manufacturer.specialization}</td>
+          <td><span style="padding:4px 8px;border-radius:4px;font-size:11px;font-weight:600;background:${manufacturer.status === 'Active' ? '#d4edda' : '#f8d7da'};color:${manufacturer.status === 'Active' ? '#155724' : '#721c24'}">${manufacturer.status}</span></td>
+          <td>
+            <button class="btn" style="padding:6px 12px;font-size:12px" onclick="editManufacturer(${manufacturer.id})">Edit</button>
+            <button class="btn danger" style="padding:6px 12px;font-size:12px" onclick="deleteManufacturer(${manufacturer.id})">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Edit manufacturer
+    function editManufacturer(id) {
+      const manufacturer = manufacturersDatabase.find(m => m.id === id);
+      if (!manufacturer) return;
+
+      document.getElementById('manufacturerName').value = manufacturer.manufacturerName;
+      document.getElementById('facilityCode').value = manufacturer.facilityCode;
+      document.getElementById('country').value = manufacturer.country;
+      document.getElementById('city').value = manufacturer.city;
+      document.getElementById('capacity').value = manufacturer.capacity;
+      document.getElementById('specialization').value = manufacturer.specialization;
+      document.getElementById('status').value = manufacturer.status;
+      document.getElementById('email').value = manufacturer.email;
+      document.getElementById('address').value = manufacturer.address;
+      document.getElementById('certifications').value = manufacturer.certifications;
+
+      // Remove from database for re-adding
+      manufacturersDatabase = manufacturersDatabase.filter(m => m.id !== id);
+      updateMetrics();
+      renderTable();
+    }
+
+    // Delete manufacturer
+    function deleteManufacturer(id) {
+      if (confirm('Are you sure you want to delete this manufacturer?')) {
+        manufacturersDatabase = manufacturersDatabase.filter(m => m.id !== id);
+        updateMetrics();
+        renderTable();
+      }
+    }
+
+    // Export CSV
+    function exportCSV() {
+      if (manufacturersDatabase.length === 0) {
+        alert('No manufacturers to export!');
+        return;
+      }
+
+      const headers = [
+        'ID', 'Manufacturer Name', 'Facility Code', 'Country', 'City', 
+        'Capacity', 'Specialization', 'Status', 'Email', 'Address', 'Certifications'
+      ];
+
+      const csvContent = [
+        headers.join(','),
+        ...manufacturersDatabase.map(manufacturer => [
+          manufacturer.id,
+          `"${manufacturer.manufacturerName}"`,
+          `"${manufacturer.facilityCode}"`,
+          `"${manufacturer.country}"`,
+          `"${manufacturer.city}"`,
+          manufacturer.capacity,
+          `"${manufacturer.specialization}"`,
+          `"${manufacturer.status}"`,
+          `"${manufacturer.email}"`,
+          `"${manufacturer.address}"`,
+          `"${manufacturer.certifications}"`
+        ].join(','))
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `manufacturers_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Import file
+    function importFile() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+      
+      if (!file) {
+        alert('Please select a file to import.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const text = e.target.result;
+          const lines = text.split('\n');
+          const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+          
+          for (let i = 1; i < lines.length; i++) {
+            if (lines[i].trim()) {
+              const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+              const manufacturer = {
+                id: Date.now() + i,
+                manufacturerName: values[1] || '',
+                facilityCode: values[2] || '',
+                country: values[3] || '',
+                city: values[4] || '',
+                capacity: parseInt(values[5]) || 0,
+                specialization: values[6] || '',
+                status: values[7] || 'Active',
+                email: values[8] || '',
+                address: values[9] || '',
+                certifications: values[10] || ''
+              };
+              
+              if (manufacturer.manufacturerName && manufacturer.facilityCode) {
+                manufacturersDatabase.push(manufacturer);
+              }
+            }
+          }
+          
+          updateMetrics();
+          renderTable();
+          alert(`Successfully imported ${lines.length - 1} manufacturers.`);
+        } catch (error) {
+          alert('Error importing file. Please check the format.');
+        }
+      };
+      
+      reader.readAsText(file);
+    }
+
+    // Initialize on load
+    init();
+  </script>
+</body>
+</html>
