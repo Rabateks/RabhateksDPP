@@ -393,6 +393,7 @@ input[readonly]{background:#f7f9fb;color:#4b5563;border-style:dashed}
       <button type="button" class="btn secondary" id="exportCsvBtn">⬇️ Export CSV</button>
       <button type="button" class="btn secondary" id="importCsvBtn">⬆️ Import CSV</button>
       <button type="button" class="btn secondary" id="templateCsvBtn">📄 Download CSV Template</button>
+      <button type="button" class="btn secondary" id="debugImportBtn">🔍 Debug Import</button>
     </div>
   </section>
 
@@ -509,42 +510,65 @@ class MultiSelect {
 
 // === AUTO IMPORT FROM RANDOM ORDER CREATOR ===
 function checkAndImportOrders() {
+  console.log('🔍 Checking for import data...');
+  
   const importData = localStorage.getItem('garment_dpp_import_data');
   const importTimestamp = localStorage.getItem('garment_dpp_import_timestamp');
+  
+  console.log('Import data exists:', !!importData);
+  console.log('Import timestamp:', importTimestamp);
   
   if (importData && importTimestamp) {
     try {
       const orders = JSON.parse(importData);
       const timestamp = parseInt(importTimestamp);
       const now = Date.now();
+      const timeDiff = now - timestamp;
+      
+      console.log('📊 Import details:');
+      console.log('- Orders count:', orders.length);
+      console.log('- Time difference:', Math.round(timeDiff / 1000), 'seconds');
+      console.log('- Within 10 minutes?', timeDiff < 10 * 60 * 1000);
       
       // Check if import is recent (within 10 minutes)
-      if (now - timestamp < 10 * 60 * 1000 && orders.length > 0) {
+      if (timeDiff < 10 * 60 * 1000 && orders.length > 0) {
+        console.log('✅ Starting import process...');
+        
         // Convert imported orders to Garment DPP format
-        const convertedOrders = orders.map(order => ({
-          id: order.id || crypto.randomUUID(),
-          country: order.country || 'Türkiye',
-          productionFacility: 'Rabateks Main Factory', // Default facility
-          po: order.po || `PO-${Math.floor(Math.random() * 90000) + 10000}`,
-          style: order.style || 'IMPORTED-STYLE',
-          productType: order.productType || 'T-shirt',
-          fabricType: order.fabricType || 'Knit',
-          fabricName: order.fabricName || 'Single Jersey',
-          fabricCode: order.fabricCode || generateFabricCode(order.fabricType, order.fabricWeight),
-          fabricConstruction: order.fabricConstruction || 'Single Jersey',
-          fabricWeight: parseInt(order.fabricWeight) || 180,
-          qty: parseInt(order.qty) || 1000,
-          steps: order.steps || ['Cutting', 'Sewing', 'Quality Control', 'Packing'],
-          co2: parseFloat(order.co2) || 0
-        }));
+        const convertedOrders = orders.map(order => {
+          console.log('Converting order:', order.style || order.po);
+          return {
+            id: order.id || crypto.randomUUID(),
+            country: order.country || 'Türkiye',
+            productionFacility: 'Rabateks Main Factory',
+            po: order.po || `PO-${Math.floor(Math.random() * 90000) + 10000}`,
+            style: order.style || 'IMPORTED-STYLE',
+            productType: order.productType || 'Crew neck T-shirt',
+            fabricType: mapFabricType(order.fabricType) || 'Circular Knit',
+            fabricName: order.fabricName || 'Single Jersey',
+            fabricCode: order.fabricCode || generateFabricCode(order.fabricType, order.fabricWeight),
+            fabricConstruction: order.fabricConstruction || 'Single Jersey',
+            fabricWeight: parseInt(order.fabricWeight) || 180,
+            qty: parseInt(order.qty) || 1000,
+            steps: Array.isArray(order.steps) ? order.steps : ['Cutting', 'Sewing', 'Quality Control', 'Packing'],
+            co2: parseFloat(order.co2) || 0
+          };
+        });
         
         // Merge with existing orders (avoid duplicates)
         const existingOrders = state.rows || [];
         const existingKeys = new Set(existingOrders.map(r => `${r.po}|${r.style}`.toLowerCase()));
         
-        const newOrders = convertedOrders.filter(order => 
-          !existingKeys.has(`${order.po}|${order.style}`.toLowerCase())
-        );
+        const newOrders = convertedOrders.filter(order => {
+          const key = `${order.po}|${order.style}`.toLowerCase();
+          const isDuplicate = existingKeys.has(key);
+          if (isDuplicate) {
+            console.log('⚠️ Skipping duplicate:', order.po, order.style);
+          }
+          return !isDuplicate;
+        });
+        
+        console.log('📥 New orders to import:', newOrders.length);
         
         if (newOrders.length > 0) {
           state.rows = [...newOrders, ...existingOrders];
@@ -552,19 +576,44 @@ function checkAndImportOrders() {
           render();
           
           // Show import notification
-          showImportNotification(`📥 Successfully imported ${newOrders.length} orders from Random Order Creator`);
+          showImportNotification(`Successfully imported ${newOrders.length} orders from Random Order Creator`);
           
-          console.log(`✅ Imported ${newOrders.length} orders from Random Order Creator`);
+          console.log(`✅ Import completed: ${newOrders.length} orders added`);
+        } else {
+          console.log('ℹ️ No new orders to import (all duplicates)');
+          showImportNotification(`No new orders to import - all orders already exist`);
         }
         
         // Clear import data to prevent re-import
         localStorage.removeItem('garment_dpp_import_data');
         localStorage.removeItem('garment_dpp_import_timestamp');
+        console.log('🧹 Import data cleared');
+        
+      } else {
+        console.log('❌ Import conditions not met:');
+        if (timeDiff >= 10 * 60 * 1000) console.log('- Data too old (>10 minutes)');
+        if (orders.length === 0) console.log('- No orders in import data');
       }
     } catch (error) {
-      console.error('Error importing orders:', error);
+      console.error('❌ Error importing orders:', error);
+      showImportNotification(`Import failed: ${error.message}`);
     }
+  } else {
+    console.log('ℹ️ No import data found in localStorage');
   }
+}
+
+function mapFabricType(originalType) {
+  // Map Random Order Creator fabric types to GarmentDPP options
+  const typeMap = {
+    'Knit': 'Circular Knit',
+    'Circular Knit': 'Circular Knit',
+    'Flatknit': 'Flatknit',
+    'Woven': 'Woven',
+    'Denim': 'Denim',
+    'Nonwoven': 'Nonwoven'
+  };
+  return typeMap[originalType] || 'Circular Knit';
 }
 
 function showImportNotification(message) {
