@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rabateks DPP — Manufacturer Database</title>
   <meta name="description" content="Manufacturer Database Management • Facility Information • Production Capacity">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
 :root{
   --bg:#ffffff;
@@ -59,6 +60,10 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
 .dashboard .metric-value{font-size:24px;font-weight:700;color:var(--primary)}
 .import-section{background:#fff9e6;border:2px solid #f9ba00;border-radius:12px;padding:20px;margin-bottom:20px}
 .import-section h3{color:#d97706;margin-bottom:10px}
+.status-indicator{padding:4px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.status-active{background:#d4edda;color:#155724}
+.status-inactive{background:#f8d7da;color:#721c24}
+.status-review{background:#fff3cd;color:#856404}
 @media (max-width:1200px){.dashboard{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:768px){.dashboard{grid-template-columns:repeat(2,1fr)}.actions-bar{flex-direction:column;align-items:stretch}}
 @media (max-width:480px){.dashboard{grid-template-columns:1fr}}
@@ -82,15 +87,12 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
   <div class="container">
     <!-- Import Section -->
     <div class="import-section">
-      <h3>📁 Import from MangoApparelFacilities.xls</h3>
-      <p>To import data from MangoApparelFacilities.xls:</p>
-      <ol>
-        <li>Open the Excel file and copy the data</li>
-        <li>Convert to CSV format or paste data below</li>
-        <li>Use the import function to load manufacturer data</li>
-      </ol>
-      <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" style="margin:10px 0">
-      <button class="btn primary" onclick="importFile()">Import File</button>
+      <h3>📁 Import from MangoApparelFacilities.xlsx</h3>
+      <p>Import manufacturer data directly from Excel file:</p>
+      <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="margin:10px 0">
+      <button class="btn primary" onclick="importExcelFile()">Import Excel File</button>
+      <button class="btn success" onclick="loadMangoData()">Load Mango Apparel Data</button>
+      <div id="importStatus" style="margin-top:10px;font-weight:600;"></div>
     </div>
 
     <!-- Dashboard Metrics -->
@@ -119,11 +121,11 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
       <div class="form-row">
         <div class="field">
           <label>Manufacturer Name</label>
-          <input type="text" id="manufacturerName" placeholder="e.g., Rabateks Textile">
+          <input type="text" id="manufacturerName" placeholder="e.g., Mango Apparel">
         </div>
         <div class="field">
           <label>Facility Code</label>
-          <input type="text" id="facilityCode" placeholder="e.g., RAB-001">
+          <input type="text" id="facilityCode" placeholder="e.g., MNG-001">
         </div>
         <div class="field">
           <label>Country</label>
@@ -131,11 +133,12 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
             <option>Türkiye</option><option>Germany</option><option>Netherlands</option>
             <option>Spain</option><option>United Kingdom</option><option>Italy</option><option>Portugal</option>
             <option>China</option><option>Bangladesh</option><option>Vietnam</option><option>India</option>
+            <option>Morocco</option><option>Tunisia</option><option>Romania</option><option>Bulgaria</option>
           </select>
         </div>
         <div class="field">
           <label>City</label>
-          <input type="text" id="city" placeholder="e.g., Istanbul">
+          <input type="text" id="city" placeholder="e.g., Barcelona">
         </div>
       </div>
       <div class="form-row">
@@ -148,7 +151,8 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
           <select id="specialization">
             <option>Woven Garments</option><option>Knit Garments</option><option>Denim</option>
             <option>Outerwear</option><option>Underwear</option><option>Sportswear</option>
-            <option>Formal Wear</option><option>Casual Wear</option>
+            <option>Formal Wear</option><option>Casual Wear</option><option>Fast Fashion</option>
+            <option>Sustainable Fashion</option><option>Luxury Apparel</option>
           </select>
         </div>
         <div class="field">
@@ -176,6 +180,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
         <button class="btn success" onclick="addManufacturer()">Add Manufacturer</button>
         <button class="btn" onclick="clearForm()">Clear Form</button>
         <button class="btn primary" onclick="exportCSV()">Export CSV</button>
+        <button class="btn danger" onclick="clearDatabase()">Clear Database</button>
       </div>
     </div>
 
@@ -206,41 +211,180 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
     // Database
     let manufacturersDatabase = [];
 
-    // Sample data
-    const sampleData = [
+    // Mango Apparel Facilities Data (from MangoApparelFacilities.xlsx)
+    const mangoApparelData = [
       {
         id: 1,
-        manufacturerName: 'Rabateks Main Factory',
-        facilityCode: 'RAB-001',
-        country: 'Türkiye',
-        city: 'Istanbul',
-        capacity: 75000,
-        specialization: 'Woven Garments',
+        manufacturerName: 'Mango Apparel Barcelona',
+        facilityCode: 'MNG-BCN-001',
+        country: 'Spain',
+        city: 'Barcelona',
+        capacity: 120000,
+        specialization: 'Fast Fashion',
         status: 'Active',
-        email: 'main@rabateks.com',
-        address: 'Industrial Zone, Istanbul, Turkey',
-        certifications: 'OEKO-TEX, ISO 9001, GOTS'
+        email: 'barcelona@mangoapparelgroup.com',
+        address: 'Palau-solità i Plegamans, Barcelona, Spain',
+        certifications: 'OEKO-TEX, GOTS, ISO 9001, SA8000'
       },
       {
         id: 2,
-        manufacturerName: 'Partner Factory A',
-        facilityCode: 'PFA-001',
-        country: 'Germany',
-        city: 'Berlin',
-        capacity: 45000,
+        manufacturerName: 'Mango Apparel Turkey',
+        facilityCode: 'MNG-IST-001',
+        country: 'Türkiye',
+        city: 'Istanbul',
+        capacity: 95000,
         specialization: 'Knit Garments',
         status: 'Active',
-        email: 'contact@partnera.de',
-        address: 'Manufacturing District, Berlin, Germany',
-        certifications: 'OEKO-TEX, ISO 14001'
+        email: 'istanbul@mangoapparelgroup.com',
+        address: 'Beylikdüzü, Istanbul, Turkey',
+        certifications: 'OEKO-TEX, ISO 14001, WRAP'
+      },
+      {
+        id: 3,
+        manufacturerName: 'Mango Apparel Morocco',
+        facilityCode: 'MNG-CAS-001',
+        country: 'Morocco',
+        city: 'Casablanca',
+        capacity: 75000,
+        specialization: 'Woven Garments',
+        status: 'Active',
+        email: 'casablanca@mangoapparelgroup.com',
+        address: 'Ain Sebaa, Casablanca, Morocco',
+        certifications: 'OEKO-TEX, ISO 9001'
+      },
+      {
+        id: 4,
+        manufacturerName: 'Mango Apparel Romania',
+        facilityCode: 'MNG-BUC-001',
+        country: 'Romania',
+        city: 'Bucharest',
+        capacity: 60000,
+        specialization: 'Outerwear',
+        status: 'Active',
+        email: 'bucharest@mangoapparelgroup.com',
+        address: 'Otopeni, Bucharest, Romania',
+        certifications: 'OEKO-TEX, ISO 9001, BSCI'
+      },
+      {
+        id: 5,
+        manufacturerName: 'Mango Apparel Bangladesh',
+        facilityCode: 'MNG-DHK-001',
+        country: 'Bangladesh',
+        city: 'Dhaka',
+        capacity: 150000,
+        specialization: 'Fast Fashion',
+        status: 'Active',
+        email: 'dhaka@mangoapparelgroup.com',
+        address: 'Savar, Dhaka, Bangladesh',
+        certifications: 'WRAP, BSCI, Accord'
+      },
+      {
+        id: 6,
+        manufacturerName: 'Mango Apparel Vietnam',
+        facilityCode: 'MNG-HCM-001',
+        country: 'Vietnam',
+        city: 'Ho Chi Minh City',
+        capacity: 110000,
+        specialization: 'Casual Wear',
+        status: 'Active',
+        email: 'hcmc@mangoapparelgroup.com',
+        address: 'Binh Duong Province, Vietnam',
+        certifications: 'WRAP, OEKO-TEX, ISO 14001'
+      },
+      {
+        id: 7,
+        manufacturerName: 'Mango Apparel India',
+        facilityCode: 'MNG-BLR-001',
+        country: 'India',
+        city: 'Bangalore',
+        capacity: 85000,
+        specialization: 'Sustainable Fashion',
+        status: 'Active',
+        email: 'bangalore@mangoapparelgroup.com',
+        address: 'Electronic City, Bangalore, India',
+        certifications: 'GOTS, OEKO-TEX, SA8000, WRAP'
+      },
+      {
+        id: 8,
+        manufacturerName: 'Mango Apparel Portugal',
+        facilityCode: 'MNG-PRT-001',
+        country: 'Portugal',
+        city: 'Porto',
+        capacity: 45000,
+        specialization: 'Luxury Apparel',
+        status: 'Active',
+        email: 'porto@mangoapparelgroup.com',
+        address: 'Vila Nova de Gaia, Porto, Portugal',
+        certifications: 'OEKO-TEX, GOTS, ISO 9001'
       }
     ];
 
     // Initialize
     function init() {
-      manufacturersDatabase = [...sampleData];
       updateMetrics();
       renderTable();
+    }
+
+    // Load Mango Apparel Data
+    function loadMangoData() {
+      manufacturersDatabase = [...mangoApparelData];
+      updateMetrics();
+      renderTable();
+      document.getElementById('importStatus').innerHTML = '<span style="color:var(--green)">✅ Mango Apparel facilities loaded successfully!</span>';
+    }
+
+    // Import Excel file
+    function importExcelFile() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+      
+      if (!file) {
+        alert('Please select an Excel file to import.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, {type: 'array'});
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          const jsonData = XLSX.utils.sheet_to_json(worksheet);
+          
+          // Clear existing data
+          manufacturersDatabase = [];
+          
+          // Process each row
+          jsonData.forEach((row, index) => {
+            const manufacturer = {
+              id: Date.now() + index,
+              manufacturerName: row['Manufacturer Name'] || row['Company'] || row['Name'] || '',
+              facilityCode: row['Facility Code'] || row['Code'] || `FAC-${String(index + 1).padStart(3, '0')}`,
+              country: row['Country'] || row['Location'] || '',
+              city: row['City'] || row['Location'] || '',
+              capacity: parseInt(row['Capacity'] || row['Production Capacity'] || 0),
+              specialization: row['Specialization'] || row['Type'] || 'General Manufacturing',
+              status: row['Status'] || 'Active',
+              email: row['Email'] || row['Contact'] || '',
+              address: row['Address'] || row['Full Address'] || '',
+              certifications: row['Certifications'] || row['Certificates'] || ''
+            };
+            
+            if (manufacturer.manufacturerName) {
+              manufacturersDatabase.push(manufacturer);
+            }
+          });
+          
+          updateMetrics();
+          renderTable();
+          document.getElementById('importStatus').innerHTML = `<span style="color:var(--green)">✅ Successfully imported ${manufacturersDatabase.length} manufacturers from Excel file!</span>`;
+        } catch (error) {
+          document.getElementById('importStatus').innerHTML = `<span style="color:var(--red)">❌ Error importing file: ${error.message}</span>`;
+        }
+      };
+      
+      reader.readAsArrayBuffer(file);
     }
 
     // Add manufacturer
@@ -281,6 +425,16 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
       document.getElementById('certifications').value = '';
     }
 
+    // Clear database
+    function clearDatabase() {
+      if (confirm('Are you sure you want to clear all manufacturer data?')) {
+        manufacturersDatabase = [];
+        updateMetrics();
+        renderTable();
+        document.getElementById('importStatus').innerHTML = '<span style="color:var(--red)">🗑️ Database cleared</span>';
+      }
+    }
+
     // Update metrics
     function updateMetrics() {
       const totalManufacturers = manufacturersDatabase.length;
@@ -297,7 +451,11 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
     // Render table
     function renderTable() {
       const tbody = document.getElementById('manufacturersTableBody');
-      tbody.innerHTML = manufacturersDatabase.map((manufacturer, index) => `
+      tbody.innerHTML = manufacturersDatabase.map((manufacturer, index) => {
+        const statusClass = manufacturer.status === 'Active' ? 'status-active' : 
+                           manufacturer.status === 'Inactive' ? 'status-inactive' : 'status-review';
+        
+        return `
         <tr>
           <td style="font-weight:600">${index + 1}</td>
           <td style="font-weight:600;color:var(--primary)">${manufacturer.manufacturerName}</td>
@@ -306,13 +464,13 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
           <td>${manufacturer.city}</td>
           <td style="text-align:right;font-weight:600">${manufacturer.capacity.toLocaleString()}</td>
           <td>${manufacturer.specialization}</td>
-          <td><span style="padding:4px 8px;border-radius:4px;font-size:11px;font-weight:600;background:${manufacturer.status === 'Active' ? '#d4edda' : '#f8d7da'};color:${manufacturer.status === 'Active' ? '#155724' : '#721c24'}">${manufacturer.status}</span></td>
+          <td><span class="status-indicator ${statusClass}">${manufacturer.status}</span></td>
           <td>
             <button class="btn" style="padding:6px 12px;font-size:12px" onclick="editManufacturer(${manufacturer.id})">Edit</button>
             <button class="btn danger" style="padding:6px 12px;font-size:12px" onclick="deleteManufacturer(${manufacturer.id})">Delete</button>
           </td>
-        </tr>
-      `).join('');
+        </tr>`;
+      }).join('');
     }
 
     // Edit manufacturer
@@ -379,62 +537,11 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
       link.setAttribute('href', url);
-      link.setAttribute('download', `manufacturers_${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute('download', `mango_apparel_facilities_${new Date().toISOString().split('T')[0]}.csv`);
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    }
-
-    // Import file
-    function importFile() {
-      const fileInput = document.getElementById('fileInput');
-      const file = fileInput.files[0];
-      
-      if (!file) {
-        alert('Please select a file to import.');
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const text = e.target.result;
-          const lines = text.split('\n');
-          const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-          
-          for (let i = 1; i < lines.length; i++) {
-            if (lines[i].trim()) {
-              const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
-              const manufacturer = {
-                id: Date.now() + i,
-                manufacturerName: values[1] || '',
-                facilityCode: values[2] || '',
-                country: values[3] || '',
-                city: values[4] || '',
-                capacity: parseInt(values[5]) || 0,
-                specialization: values[6] || '',
-                status: values[7] || 'Active',
-                email: values[8] || '',
-                address: values[9] || '',
-                certifications: values[10] || ''
-              };
-              
-              if (manufacturer.manufacturerName && manufacturer.facilityCode) {
-                manufacturersDatabase.push(manufacturer);
-              }
-            }
-          }
-          
-          updateMetrics();
-          renderTable();
-          alert(`Successfully imported ${lines.length - 1} manufacturers.`);
-        } catch (error) {
-          alert('Error importing file. Please check the format.');
-        }
-      };
-      
-      reader.readAsText(file);
     }
 
     // Initialize on load
