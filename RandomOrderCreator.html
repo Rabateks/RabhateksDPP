@@ -63,7 +63,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
 .stats-section{display:flex;gap:12px;align-items:center}
 @media (max-width:1200px){.dashboard{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:768px){.dashboard{grid-template-columns:repeat(2,1fr)}.actions-bar{flex-direction:column;align-items:stretch}}
-@media (max-width:480px){.dashboard{grid-template:columns:1fr}}
+@media (max-width:480px){.dashboard{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -154,8 +154,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
             <th>Fabric Construction</th>
             <th>Weight (gsm)</th>
             <th>Quantity</th>
-            <th>Production Steps</th>
-            <th>Created</th>
+            <th>Created Date</th>
           </tr>
         </thead>
         <tbody id="ordersTableBody">
@@ -174,21 +173,51 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
     // === DATA POOLS ===
     const DATA_POOLS = {
       countries: [
-        'Türkiye', 'Germany', 'France', 'Italy', 'Spain', 'Netherlands', 
-        'Poland', 'UK', 'Portugal', 'Belgium', 'Austria', 'Switzerland'
+        'Türkiye', 'Germany', 'Netherlands', 'Spain', 'United Kingdom', 'Italy', 'Portugal'
       ],
       
-      productTypes: [
-        'Polo shirt', 'T-shirt', 'Dress shirt', 'Hoodie', 'Tank top',
-        'Slim jeans', 'Regular jeans', 'Shorts', 'Chinos', 'Blazer',
-        'Jacket', 'Sweatshirt', 'Cardigan', 'Pullover', 'Vest'
-      ],
+      productTypes: {
+        'Woven': [
+          'Dress shirt', 'Casual shirt', 'Flannel shirt', 'Suit jacket', 'Trousers', 'Waistcoat', 'Blazer',
+          'Trench coat', 'Bomber jacket', 'Safari jacket', 'Chinos', 'Dress pants', 'Cargo pants',
+          'Pencil skirt', 'Pleated skirt', 'A-line skirt', 'Shift dress', 'Shirt dress', 'Wrap dress',
+          'Blouse', 'Tunic', 'Peasant top', 'Tailored shorts', 'Bermuda shorts', 'Overcoat',
+          'Pea coat', 'Duffle coat', 'Fedora hat', 'Bucket hat', 'Tote bag', 'Clutch bag',
+          'Uniform shirt', 'Work trousers'
+        ],
+        'Circular Knit': [
+          'Crew neck T-shirt', 'V-neck T-shirt', 'Polo shirt', 'Crewneck sweatshirt', 'Hoodie',
+          'Quarter-zip sweatshirt', 'Jogger pants', 'Sweatpants', 'Tank top', 'Lightweight sweater',
+          'Thermal underwear', 'Long johns', 'Knit pyjamas', 'Jersey sports top', 'Yoga top',
+          'Knit dress', 'Bodycon dress', 'Jersey shorts', 'Jersey skirt'
+        ],
+        'Flatknit': [
+          'Crew neck sweater', 'V-neck sweater', 'Turtleneck sweater', 'Button-up cardigan',
+          'Open-front cardigan', 'Poncho', 'Vest', 'Sleeveless pullover', 'Knitted shawl',
+          'Knitted scarf', 'Knitted beanie', 'Knitted cap', 'Knitted gloves', 'Knitted dress',
+          'Knitted baby romper', 'Knitted waistcoat'
+        ],
+        'Nonwoven': [
+          'Medical gown', 'Surgical mask', 'Surgical cap', 'Disposable coverall', 'Disposable tablecloth',
+          'Non-woven shopper bag', 'Sanitary pad top layer', 'Baby diaper top layer', 'Cleaning cloth',
+          'Non-woven filter', 'Non-woven glove lining', 'Disposable hotel slippers', 'Gift wrap', 'Garment bag'
+        ],
+        'Denim': [
+          'Slim jeans', 'Straight jeans', 'Bootcut jeans', 'Flare jeans', 'Boyfriend jeans', 'Skinny jeans',
+          'Trucker denim jacket', 'Oversized denim jacket', 'Western denim shirt', 'Mini denim skirt',
+          'Midi denim skirt', 'Maxi denim skirt', 'Denim overall', 'Denim pinafore dress',
+          'Cut-off denim shorts', 'Bermuda denim shorts', 'Denim tote bag', 'Denim backpack',
+          'Denim bucket hat', 'Denim cap', 'Denim work overalls', 'Denim vest'
+        ]
+      },
 
-      fabricTypes: [
-        'Cotton', 'Knit', 'Woven', 'Denim', 'Polyester', 
-        'Wool', 'Linen', 'Silk', 'Spandex', 'Rayon',
-        'Bamboo', 'Modal', 'Viscose', 'Nylon'
-      ],
+      fabricTypes: {
+        'Woven': 'Woven',
+        'Circular Knit': 'Circular Knit', 
+        'Flatknit': 'Flatknit',
+        'Nonwoven': 'Nonwoven',
+        'Denim': 'Denim'
+      },
 
       fabricNames: [
         'Single Jersey', 'Pique Knit', 'Fleece', 'French Terry', 'Rib Knit',
@@ -196,11 +225,26 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
         'Denim', 'Corduroy', 'Velvet', 'Satin', 'Chiffon'
       ],
 
-      fabricConstructions: [
-        'Single Jersey', 'Double Jersey', 'Interlock', 'Rib', 'Pique',
-        'Plain Weave', 'Twill Weave', 'Satin Weave', 'Oxford Weave',
-        'Poplin Weave', 'Canvas Weave', 'Denim Weave'
-      ],
+      fabricConstructions: {
+        'Woven': [
+          'Plain Weave / Poplin', 'Oxford', 'Chambray', 'Canvas', 'Twill', 'Denim', 'Satin', 'Sateen',
+          'Herringbone', 'Dobby', 'Seersucker', 'Jacquard Woven', 'Corduroy', 'Ripstop'
+        ],
+        'Circular Knit': [
+          'Single Jersey', 'Double Jersey', 'Interlock', 'Rib 1x1', 'Rib 2x2', 'Ottoman', 'Waffle Knit',
+          'French Terry', 'Terry', 'Fleece Knit', 'Pique Knit', 'Jacquard Knit', 'Mesh Knit', 'Ponte Roma', 'Milano Rib'
+        ],
+        'Flatknit': [
+          'Single Jersey', 'Double Jersey', 'Interlock', 'Rib 1x1', 'Rib 2x2', 'Ottoman', 'Waffle Knit',
+          'French Terry', 'Terry', 'Fleece Knit', 'Pique Knit', 'Jacquard Knit', 'Mesh Knit', 'Ponte Roma', 'Milano Rib'
+        ],
+        'Nonwoven': [
+          'Nonwoven Spunbond', 'Nonwoven Meltblown'
+        ],
+        'Denim': [
+          'Denim'
+        ]
+      },
 
       productionSteps: [
         'Pattern Making', 'Cutting', 'Sewing', 'Embroidery', 'Printing',
@@ -238,14 +282,24 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
       return `${prefix}-${suffix}`;
     }
 
+    function generateFabricName() {
+      return `RD${randomNumber(1000, 9999)}`;
+    }
+
+    function generateRandomDate() {
+      const start = new Date(2023, 0, 1);
+      const end = new Date(2024, 11, 31);
+      const randomTime = start.getTime() + Math.random() * (end.getTime() - start.getTime());
+      return new Date(randomTime).toISOString().split('T')[0];
+    }
+
     function generateFabricWeight(fabricType) {
       const weights = {
-        'Cotton': [160, 180, 200, 220, 240],
-        'Knit': [140, 160, 180, 200, 220],
-        'Woven': [120, 140, 160, 180, 200],
+        'Woven': [120, 140, 160, 180, 200, 220],
+        'Circular Knit': [140, 160, 180, 200, 220, 240],
+        'Flatknit': [180, 200, 220, 240, 260, 280],
+        'Nonwoven': [80, 100, 120, 140, 160],
         'Denim': [300, 350, 400, 450, 500],
-        'Polyester': [100, 120, 140, 160, 180],
-        'Wool': [200, 250, 300, 350, 400],
         'default': [160, 180, 200, 220, 240]
       };
       
@@ -254,15 +308,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
     }
 
     function generateQuantity() {
-      const ranges = [
-        [100, 500],   // Small batch
-        [500, 1500],  // Medium batch  
-        [1500, 3000], // Large batch
-        [3000, 5000]  // XL batch
-      ];
-      
-      const [min, max] = randomChoice(ranges);
-      return randomNumber(min, max);
+      return randomNumber(400, 25000);
     }
 
     function generateProductionSteps() {
@@ -274,10 +320,27 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
     // === ORDER CREATION ===
     function createSingleRandomOrder() {
       const country = randomChoice(DATA_POOLS.countries);
-      const productType = randomChoice(DATA_POOLS.productTypes);
-      const fabricType = randomChoice(DATA_POOLS.fabricTypes);
-      const fabricName = randomChoice(DATA_POOLS.fabricNames);
-      const fabricConstruction = randomChoice(DATA_POOLS.fabricConstructions);
+      
+      // First select fabric type category
+      const fabricTypeCategories = Object.keys(DATA_POOLS.productTypes);
+      const selectedFabricTypeCategory = randomChoice(fabricTypeCategories);
+      
+      // Select product type based on fabric type category
+      const productType = randomChoice(DATA_POOLS.productTypes[selectedFabricTypeCategory]);
+      
+      // Map fabric type category to actual fabric type
+      let fabricType;
+      if (selectedFabricTypeCategory === 'Circular Knit' || selectedFabricTypeCategory === 'Flatknit') {
+        fabricType = 'Knit';
+      } else {
+        fabricType = selectedFabricTypeCategory;
+      }
+      
+      // Generate fabric name with RD prefix
+      const fabricName = generateFabricName();
+      
+      // Select fabric construction based on fabric type category
+      const fabricConstruction = randomChoice(DATA_POOLS.fabricConstructions[selectedFabricTypeCategory]);
       const fabricWeight = generateFabricWeight(fabricType);
       const quantity = generateQuantity();
       const productionSteps = generateProductionSteps();
@@ -295,7 +358,8 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
         quantity: quantity,
         productionSteps: productionSteps,
         createdAt: new Date().toISOString(),
-        createdTime: new Date().toLocaleString('tr-TR')
+        createdTime: new Date().toLocaleString('tr-TR'),
+        createdDate: generateRandomDate()
       };
 
       return order;
@@ -476,18 +540,17 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
 
       tbody.innerHTML = ordersDatabase.map((order, index) => `
         <tr>
-          <td style="font-weight:600">${order.id}</td>
+          <td style="font-weight:600">${index + 1}</td>
           <td>${order.country}</td>
           <td style="font-family:monospace">${order.poNumber}</td>
           <td style="font-weight:600;color:var(--primary)">${order.styleName}</td>
           <td>${order.productType}</td>
           <td>${order.fabricType}</td>
-          <td>${order.fabricName}</td>
+          <td style="font-family:monospace;color:var(--green)">${order.fabricName}</td>
           <td>${order.fabricConstruction}</td>
           <td style="text-align:center">${order.fabricWeight}</td>
           <td style="text-align:right;font-weight:600">${order.quantity.toLocaleString()}</td>
-          <td style="font-size:11px">${order.productionSteps.join(', ')}</td>
-          <td style="font-size:11px;color:var(--muted)">${order.createdTime}</td>
+          <td style="font-size:11px;color:var(--muted)">${order.createdDate}</td>
         </tr>
       `).join('');
     }
@@ -502,7 +565,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
       const headers = [
         'ID', 'Country', 'PO Number', 'Style Name', 'Product Type', 
         'Fabric Type', 'Fabric Name', 'Fabric Construction', 'Fabric Weight (gsm)', 
-        'Quantity', 'Production Steps', 'Created At'
+        'Quantity', 'Created Date'
       ];
 
       const csvContent = [
@@ -518,8 +581,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
           `"${order.fabricConstruction}"`,
           order.fabricWeight,
           order.quantity,
-          `"${order.productionSteps.join('; ')}"`,
-          `"${order.createdTime}"`
+          `"${order.createdDate}"`
         ].join(','))
       ].join('\n');
 
