@@ -3,10 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Rabateks DPP — Garment Manufacturing</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Rabateks DPP – Garment Manufacturing</title>
+<!-- Local font fallback to avoid CORS issues -->
 <style>
 :root{
   --primary:#02154e;
@@ -44,6 +42,16 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sa
 }
 .back-link:hover{ transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,85,48,0.35); }
 .back-link:active{ transform:translateY(0); }
+
+/* Import notification */
+.import-notification{
+  background:linear-gradient(135deg, #4CAF50, #81C784);
+  color:white; padding:12px 18px; text-align:center; font-weight:600;
+  border-bottom:1px solid rgba(76,175,80,0.3); box-shadow:0 2px 8px rgba(76,175,80,0.25);
+  display:none;
+}
+.import-notification.show{ display:block; animation:slideDown 0.5s ease; }
+@keyframes slideDown{ from{transform:translateY(-100%)} to{transform:translateY(0)} }
 
 /* Layout */
 .container{max-width:1200px;margin:18px auto;padding:0 18px}
@@ -117,18 +125,23 @@ input[readonly]{background:#f7f9fb;color:#4b5563;border-style:dashed}
 
 <header class="app-header">
   <div class="header-left">
-    <span class="brand-logo"><img src=assets/img/logo.png" alt="Rabateks Logo"></span>
+    <span class="brand-logo"><img src="assets/img/logo.png" alt="Rabateks Logo"></span>
     <div>
       <div class="title">
         <span style="color:#005530;">Rabateks</span>
         <span style="color:#f9ba00;">DPP</span>
-        <span style="color:#000;font-weight:400;"> — Garment Manufacturing</span>
+        <span style="color:#000;font-weight:400;"> – Garment Manufacturing</span>
       </div>
       <div class="subtitle">Digital Product Passport · Production Tracking · Quality Control</div>
     </div>
   </div>
   <a class="back-link" href="index.html" title="Back to Main Dashboard">← Back to Main Dashboard</a>
 </header>
+
+<!-- Import Notification -->
+<div class="import-notification" id="importNotification">
+  📥 <span id="importMessage">Imported orders from Random Order Creator</span>
+</div>
 
 <main class="container">
   <section class="form-wrap" id="formWrap">
@@ -317,7 +330,7 @@ input[readonly]{background:#f7f9fb;color:#4b5563;border-style:dashed}
           </optgroup>
           <!-- WOVEN -->
           <optgroup label="Woven">
-            <option>Plain Weave / Poplin</option><option>Oxford</option><option>Chambray</option><option>Canvas</option>
+            <option>Plain Weave / Poplin</option><option>Oxford</option><option>Chandray</option><option>Canvas</option>
             <option>Twill</option><option>Denim</option><option>Satin</option><option>Sateen</option>
             <option>Herringbone</option><option>Dobby</option><option>Seersucker</option><option>Jacquard Woven</option>
             <option>Corduroy</option><option>Ripstop</option>
@@ -366,7 +379,7 @@ input[readonly]{background:#f7f9fb;color:#4b5563;border-style:dashed}
 
       <!-- NEW: Auto CO2 field -->
       <div class="field">
-        <label>CO₂ Emission (kg) — Auto</label>
+        <label>CO₂ Emission (kg) – Auto</label>
         <input id="co2" type="number" placeholder="0.00" readonly>
         <div class="helper" id="co2Helper">Estimated from GSM × product area × emission factor.</div>
       </div>
@@ -447,10 +460,6 @@ class MultiSelect {
     });
     this.updateDisplay();
   }
-  toggleDropdown() {
-    const isOpen = this.dropdown.classList.contains('open');
-    if (isOpen) this.closeDropdown(); else this.openDropdown();
-  }
   openDropdown() { this.dropdown.classList.add('open'); this.display.querySelector('.dropdown-arrow').style.transform = 'rotate(180deg)'; }
   closeDropdown() { this.dropdown.classList.remove('open'); this.display.querySelector('.dropdown-arrow').style.transform = 'rotate(0deg)'; }
   toggleOption(value) {
@@ -498,437 +507,86 @@ class MultiSelect {
   clear() { this.selectedValues.clear(); this.updateDisplay(); this.updateOptions(); }
 }
 
-// Main Application (mostly unchanged)
-(function(){
-  const qs = (sel, root=document) => root.querySelector(sel);
-  const formWrap = qs('#formWrap');
-  const form = {
-    country: qs('#country'),
-    productionFacility: qs('#productionFacility'),
-    po: qs('#po'),
-    style: qs('#style'),
-    productType: qs('#productType'),
-    fabricType: qs('#fabricType'),
-    fabricName: qs('#fabricName'),
-    fabricCode: qs('#fabricCode'),
-    fabricConstruction: qs('#fabricConstruction'),
-    fabricWeight: qs('#fabricWeight'),
-    qty: qs('#qty'),
-    co2: qs('#co2'),
-    co2Helper: qs('#co2Helper')
-  };
-  const addBtn = qs('#addBtn'), clearBtn = qs('#clearBtn');
-  const saveChangesBtn = qs('#saveChangesBtn'), cancelEditBtn = qs('#cancelEditBtn');
-  const list = qs('#scorecards');
-
-  // Initialize MultiSelect
-  const stepsMultiSelect = new MultiSelect(qs('#stepsMultiSelect'), {
-    placeholder: 'Select production steps...',
-    onChange: () => { if(state.editingId) state.dirty = true; updateCO2(); }
-  });
-
-  let state = { rows: [], editingId: null, dirty: false };
-
-  // --- Manual fields: validation & auto-code ---
-  const CODE_RE = /^[A-Z]{2,5}-\d{2,4}(?:-[A-Z0-9]{2,4})?$/;
-
-  function mapNameToPrefix(name){
-    const n = (name||'').toLowerCase().trim();
-    const dict = {
-      'single jersey':'SJ','interlock':'IL','rib':'RB','french terry':'FT',
-      'pique knit':'PQ','denim':'DN','twill':'TW','poplin':'PL','oxford':'OX','canvas':'CV','satin':'ST','herringbone':'HB',
-      'seersucker':'SS','lace':'LC','velvet':'VL','velour':'VR','jersey':'SJ','pique':'PQ'
-    };
-    for(const k of Object.keys(dict)){ if(n.includes(k)) return dict[k]; }
-    const letters = n.replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(Boolean).map(w=>w[0].toUpperCase());
-    const ac = (letters.join('') || 'FB').slice(0,4);
-    return ac;
-  }
-
-  function mapTypeToSuffix(t){
-    const s = (t||'').toLowerCase();
-    if(s.includes('knit')) return 'KN';
-    if(s.includes('woven') || s.includes('denim') || s.includes('twill') || s.includes('oxford')) return 'WV';
-    if(s.includes('nonwoven')) return 'NW';
-    return 'OT';
-  }
-
-  function generateFabricCode(){
-    const prefix = mapNameToPrefix(form.fabricName.value);
-    const gsm = parseInt(form.fabricWeight.value,10);
-    const num = Number.isFinite(gsm) && gsm>0 ? String(gsm) : '00';
-    const suf = mapTypeToSuffix(form.fabricType.value);
-    return `${prefix}-${num}-${suf}`;
-  }
-
-  function validateManualFields(row){
-    if(!row.fabricName || !row.fabricName.trim()){ alert('Please enter Fabric Name.'); return false; }
-    if(!row.fabricCode || !CODE_RE.test(row.fabricCode)){ alert('Please enter a valid Fabric Code (e.g., SJ-180-KN).'); return false; }
-    return true;
-  }
-
-  // --- CO2 ESTIMATOR (BETA) ---
-  const PRODUCT_AREA_M2 = {
-    'T-Shirt': 1.50,
-    'Polo': 1.70,
-    'Shirt': 1.80,
-    'Hoodie': 2.00,
-    'Dress': 2.20,
-    'Jeans': 1.60,
-    'Jacket': 2.50,
-    'Skirt': 1.20
-  };
-  const FABRIC_EF = {
-    'Knit': 6.0,
-    'Woven': 6.5,
-    'Denim': 7.5,
-    'Nonwoven': 5.5,
-    'Sweatshirt Fleece': 6.8,
-    'Rib': 6.0
-  };
-
-  function calcCO2TotalKg({productType, fabricType, gsm, qty}){
-    const area = PRODUCT_AREA_M2[productType] ?? 1.5; // m² per piece
-    const ef = FABRIC_EF[fabricType] ?? 6.0;          // kg CO2 / kg fabric
-    const massPerPieceKg = (Math.max(gsm||0,0) * area) / 1000; // kg
-    const co2PerPiece = massPerPieceKg * ef; // kg CO2
-    return co2PerPiece * Math.max(qty||0,0);
-  }
-
-  function updateCO2(){
-    const gsm = parseInt(form.fabricWeight.value,10) || 0;
-    const qty = parseInt(form.qty.value,10) || 0;
-    const productType = form.productType.value || 'T-Shirt';
-    const fabricType = form.fabricType.value || 'Knit';
-    const total = calcCO2TotalKg({productType, fabricType, gsm, qty});
-    form.co2.value = total ? total.toFixed(2) : '';
-    const area = PRODUCT_AREA_M2[productType] ?? 1.5;
-    const ef = FABRIC_EF[fabricType] ?? 6.0;
-    const co2PerPiece = ((gsm * area)/1000) * ef;
-    form.co2Helper.textContent = `Estimated: ${co2PerPiece.toFixed(3)} kg CO₂ / piece × ${qty || 0} pcs = ${total.toFixed(2)} kg.`;
-    if(state.editingId) state.dirty = true;
-  }
-
-  // --- CSV Export / Import / Template ---
-  const CSV_HEADERS = ["id","country","productionFacility","po","style","productType","fabricType","fabricName","fabricCode","fabricConstruction","fabricWeight","qty","steps","co2"];
-
-  function escapeCSV(value){
-    if (value === null || value === undefined) return "";
-    const str = String(value);
-    if (/[\",\n]/.test(str)) { return '"' + str.replace(/\"/g,'""') + '"'; }
-    return str;
-  }
-
-  function rowsToCSV(rows){
-    const header = CSV_HEADERS.join(",");
-    const lines = rows.map(r=>{
-      const steps = (r.steps||[]).join(";");
-      const vals = [ r.id, r.country, r.productionFacility, r.po, r.style, r.productType, r.fabricType, r.fabricName, r.fabricCode, r.fabricConstruction, r.fabricWeight, r.qty, steps, r.co2 ?? 0 ];
-      return vals.map(escapeCSV).join(",");
-    });
-    return [header, ...lines].join("\n");
-  }
-
-  function downloadCSV(){
-    const csv = rowsToCSV(state.rows);
-    const bom = "\ufeff";
-    const blob = new Blob([bom + csv], {type: "text/csv;charset=utf-8;"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    const ts = new Date();
-    const y = ts.getFullYear().toString();
-    const m = String(ts.getMonth()+1).padStart(2,"0");
-    const d = String(ts.getDate()).padStart(2,"0");
-    a.href = url; a.download = `garment_dpp_export_${y}${m}${d}.csv`;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  function downloadCSVTemplate(){
-    const header = CSV_HEADERS.join(",");
-    const bom = "\ufeff";
-    const blob = new Blob([bom + header + "\n"], {type:"text/csv;charset=utf-8;"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = "garment_dpp_template.csv";
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  function parseCSV(text){
-    const lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n").filter(l=>l.length>0);
-    if(lines.length === 0) return [];
-    function splitCSV(line){
-      const out = []; let cur = ""; let inQuotes = false;
-      for(let i=0;i<line.length;i++){
-        const ch = line[i];
-        if(ch === '"'){ if(inQuotes && line[i+1] === '"'){ cur += '"'; i++; } else { inQuotes = !inQuotes; } }
-        else if(ch === ',' && !inQuotes){ out.push(cur); cur = ""; }
-        else { cur += ch; }
+// === AUTO IMPORT FROM RANDOM ORDER CREATOR ===
+function checkAndImportOrders() {
+  const importData = localStorage.getItem('garment_dpp_import_data');
+  const importTimestamp = localStorage.getItem('garment_dpp_import_timestamp');
+  
+  if (importData && importTimestamp) {
+    try {
+      const orders = JSON.parse(importData);
+      const timestamp = parseInt(importTimestamp);
+      const now = Date.now();
+      
+      // Check if import is recent (within 10 minutes)
+      if (now - timestamp < 10 * 60 * 1000 && orders.length > 0) {
+        // Convert imported orders to Garment DPP format
+        const convertedOrders = orders.map(order => ({
+          id: order.id || crypto.randomUUID(),
+          country: order.country || 'Türkiye',
+          productionFacility: 'Rabateks Main Factory', // Default facility
+          po: order.po || `PO-${Math.floor(Math.random() * 90000) + 10000}`,
+          style: order.style || 'IMPORTED-STYLE',
+          productType: order.productType || 'T-shirt',
+          fabricType: order.fabricType || 'Knit',
+          fabricName: order.fabricName || 'Single Jersey',
+          fabricCode: order.fabricCode || generateFabricCode(order.fabricType, order.fabricWeight),
+          fabricConstruction: order.fabricConstruction || 'Single Jersey',
+          fabricWeight: parseInt(order.fabricWeight) || 180,
+          qty: parseInt(order.qty) || 1000,
+          steps: order.steps || ['Cutting', 'Sewing', 'Quality Control', 'Packing'],
+          co2: parseFloat(order.co2) || 0
+        }));
+        
+        // Merge with existing orders (avoid duplicates)
+        const existingOrders = state.rows || [];
+        const existingKeys = new Set(existingOrders.map(r => `${r.po}|${r.style}`.toLowerCase()));
+        
+        const newOrders = convertedOrders.filter(order => 
+          !existingKeys.has(`${order.po}|${order.style}`.toLowerCase())
+        );
+        
+        if (newOrders.length > 0) {
+          state.rows = [...newOrders, ...existingOrders];
+          saveDB();
+          render();
+          
+          // Show import notification
+          showImportNotification(`📥 Successfully imported ${newOrders.length} orders from Random Order Creator`);
+          
+          console.log(`✅ Imported ${newOrders.length} orders from Random Order Creator`);
+        }
+        
+        // Clear import data to prevent re-import
+        localStorage.removeItem('garment_dpp_import_data');
+        localStorage.removeItem('garment_dpp_import_timestamp');
       }
-      out.push(cur);
-      return out;
+    } catch (error) {
+      console.error('Error importing orders:', error);
     }
-    const headers = splitCSV(lines[0]).map(h=>h.replace(/^\"|\"$/g,""));
-    const idx = {}; headers.forEach((h,i)=> idx[h]=i);
-    const rows = [];
-    for(let li=1; li<lines.length; li++){
-      const parts = splitCSV(lines[li]);
-      if(parts.length===1 && parts[0].trim()==="") continue;
-      const obj = {};
-      CSV_HEADERS.forEach(h=>{
-        const i = idx[h];
-        obj[h] = (i!==undefined && parts[i]!==undefined) ? parts[i].replace(/^\"|\"$/g,"") : "";
-      });
-      obj.fabricWeight = parseInt(obj.fabricWeight,10) || 0;
-      obj.qty = parseInt(obj.qty,10) || 0;
-      obj.steps = obj.steps ? obj.steps.split(";").filter(Boolean) : [];
-      obj.co2 = parseFloat(obj.co2) || 0;
-      rows.push(obj);
-    }
-    return rows;
   }
+}
 
-  function importCSVFile(file){
-    const reader = new FileReader();
-    reader.onload = (e)=>{
-      try{
-        const text = e.target.result;
-        const incoming = parseCSV(text);
-        if(incoming.length===0){ alert('CSV appears to be empty.'); return; }
-        let added=0, updated=0;
-        const map = new Map(state.rows.map(r=>[((r.po||'')+'|'+(r.style||'')).toLowerCase(), r]));
-        incoming.forEach(row=>{
-          const key = ((row.po||'')+'|'+(row.style||'')).toLowerCase();
-          if(map.has(key)){
-            const existing = map.get(key);
-            row.id = existing.id;
-            map.set(key, row);
-            updated++;
-          }else{
-            row.id = row.id || crypto.randomUUID();
-            map.set(key, row);
-            added++;
-          }
-        });
-        state.rows = Array.from(map.values());
-        saveDB(); render();
-        alert(`Import completed. Added: ${added}, Updated: ${updated}`);
-      }catch(err){
-        console.error(err);
-        alert('Failed to import CSV: ' + err.message);
-      }
-    };
-    reader.readAsText(file, 'utf-8');
-  }
+function showImportNotification(message) {
+  const notification = document.getElementById('importNotification');
+  const messageSpan = document.getElementById('importMessage');
+  
+  messageSpan.textContent = message;
+  notification.classList.add('show');
+  
+  // Auto-hide after 5 seconds
+  setTimeout(() => {
+    notification.classList.remove('show');
+  }, 5000);
+}
 
-  // DB
-  function loadDB(){ const data = localStorage.getItem('gm_dpp_rows'); state.rows = data ? JSON.parse(data) : []; }
-  function saveDB(){ localStorage.setItem('gm_dpp_rows', JSON.stringify(state.rows)); }
-
-  function toInt(v){ const n = parseInt(v,10); return Number.isFinite(n)?n:0; }
-
-  function clearForm(){
-    Object.values(form).forEach(el=>{
-      if(el.tagName==='SELECT'){ el.selectedIndex = -1; }
-      else{ el.value=''; }
-    });
-    stepsMultiSelect.clear();
-    form.co2Helper.textContent = 'Estimated from GSM × product area × emission factor.';
-  }
-
-  function collectFormData(){
-    return {
-      id: state.editingId || crypto.randomUUID(),
-      country: form.country.value,
-      productionFacility: form.productionFacility.value,
-      po: form.po.value.trim(),
-      style: form.style.value.trim(),
-      productType: form.productType.value,
-      fabricType: form.fabricType.value,
-      fabricName: form.fabricName.value,
-      fabricCode: form.fabricCode.value,
-      fabricConstruction: form.fabricConstruction.value,
-      fabricWeight: toInt(form.fabricWeight.value),
-      qty: toInt(form.qty.value),
-      steps: stepsMultiSelect.getValues(),
-      co2: parseFloat(form.co2.value) || 0
-    };
-  }
-
-  function addRecord(){
-    const row = collectFormData();
-    if(!row.po || !row.style){ alert('Please enter PO No. and Style Name.'); return; }
-    if(!row.country || !row.productionFacility || !row.productType || !row.fabricType || !row.fabricConstruction){ alert('Please select Country, Production Facility, Product Type, Fabric Type and Fabric Construction.'); return; }
-    if(!validateManualFields(row)) return;
-    const key = (row.po+'|'+row.style).toLowerCase();
-    const hasDup = state.rows.some(r => (r.po+'|'+r.style).toLowerCase() === key);
-    if(hasDup){
-      if(!confirm('A record with the same PO and Style exists. Overwrite?')) return;
-      state.rows = state.rows.map(r=> ((r.po+'|'+r.style).toLowerCase()===key? row : r));
-    } else {
-      state.rows.unshift(row);
-    }
-    saveDB(); render(); clearForm();
-  }
-
-  function removeRecord(id){
-    state.rows = state.rows.filter(r=>r.id!==id);
-    saveDB(); render();
-  }
-
-  function editRecord(id){
-    if(state.editingId && state.editingId!==id && state.dirty){
-      if(!confirm("Discard changes?")) return;
-    }
-    const r = state.rows.find(x=>x.id===id); if(!r) return;
-    form.country.value = r.country || '';
-    form.productionFacility.value = r.productionFacility || '';
-    form.po.value = r.po || '';
-    form.style.value = r.style || '';
-    form.productType.value = r.productType || '';
-    form.fabricType.value = r.fabricType || '';
-    form.fabricName.value = r.fabricName || '';
-    form.fabricCode.value = r.fabricCode || '';
-    form.fabricConstruction.value = r.fabricConstruction || '';
-    form.fabricWeight.value = r.fabricWeight ?? '';
-    form.qty.value = r.qty ?? '';
-    stepsMultiSelect.setValues(r.steps || []);
-    form.co2.value = (r.co2 ?? 0) ? Number(r.co2).toFixed(2) : '';
-    updateCO2();
-
-    state.editingId = id;
-    formWrap.classList.add('editing');
-    addBtn.style.display='none'; clearBtn.style.display='none';
-    saveChangesBtn.style.display='inline-block'; cancelEditBtn.style.display='inline-block';
-    state.dirty = false;
-  }
-
-  function saveChanges(){
-    const updated = collectFormData();
-    state.rows = state.rows.map(r=> r.id===state.editingId ? updated : r);
-    saveDB(); render(); exitEdit();
-  }
-
-  function exitEdit(){
-    state.editingId = null;
-    formWrap.classList.remove('editing');
-    addBtn.style.display='inline-block'; clearBtn.style.display='inline-block';
-    saveChangesBtn.style.display='none'; cancelEditBtn.style.display='none';
-    clearForm(); state.dirty=false;
-  }
-
-  function renderMetrics(){
-    document.getElementById('mPos').textContent = new Set(state.rows.map(r=>r.po)).size;
-    document.getElementById('mQty').textContent = state.rows.reduce((s,r)=>s+r.qty,0).toLocaleString();
-    const gsms = state.rows.map(r=>r.fabricWeight).filter(n=>n>0);
-    document.getElementById('mAvgGsm').textContent = gsms.length? Math.round(gsms.reduce((s,n)=>s+n,0)/gsms.length):0;
-    document.getElementById('mStyles').textContent = new Set(state.rows.map(r=>r.style)).size;
-    const totalCO2 = state.rows.reduce((s,r)=> s + (Number(r.co2)||0), 0);
-    document.getElementById('mCO2').textContent = totalCO2.toFixed(2);
-  }
-
-  function kv(k,v){ return `<div class="kv"><div class="k">${k}</div><div class="v">${(v!==undefined&&v!==null&&v!=='')?v:'-'}</div></div>`; }
-
-  function renderList(){
-    const list = document.getElementById('scorecards');
-    list.innerHTML = state.rows.map(r=>{
-      const header = `${r.country} · ${r.po} · ${r.style}`;
-      return `<article class="scorecard" data-id="${r.id}">
-        <div class="scorecard-header">
-          <div>${header}</div>
-          <div class="row-actions">
-            <button class="icon-btn edit" data-act="edit">✏️ Edit</button>
-            <button class="icon-btn" data-act="toggle">👁️ Details</button>
-            <button class="icon-btn delete" data-act="delete">🗑️ Delete</button>
-          </div>
-        </div>
-        <div class="scorecard-body" hidden>
-          <div class="grid">
-            ${kv('Product Type', r.productType)}
-            ${kv('Fabric Type', r.fabricType)}
-            ${kv('Fabric Name', r.fabricName)}
-            ${kv('Fabric Code', r.fabricCode)}
-            ${kv('Fabric Construction', r.fabricConstruction)}
-            ${kv('Fabric Weight (gsm)', r.fabricWeight)}
-            ${kv('Quantity', r.qty.toLocaleString())}
-            ${kv('Production Step(s)', (r.steps||[]).join(', '))}
-            ${kv('CO₂ (total kg)', (Number(r.co2)||0).toFixed(2))}
-            ${kv('Country', r.country)}
-            ${kv('Production Facility', r.productionFacility)}
-            ${kv('PO No.', r.po)}
-            ${kv('Style Name', r.style)}
-          </div>
-        </div>
-      </article>`;
-    }).join('');
-  }
-
-  function render(){ renderMetrics(); renderList(); }
-
-  // Events
-  document.getElementById('scorecards').addEventListener('click', e=>{
-    const btn = e.target.closest('button'); if(!btn) return;
-    const card = e.target.closest('.scorecard'); const id = card?.dataset.id; const act = btn.dataset.act;
-    if(act==='delete'){ if(confirm('Delete this record?')) removeRecord(id); }
-    else if(act==='toggle'){ 
-      const body = card.querySelector('.scorecard-body'); 
-      body.hidden=!body.hidden; 
-      btn.innerHTML = body.hidden ? '👁️ Details' : '🔼 Hide'; 
-    }
-    else if(act==='edit') editRecord(id);
-  });
-
-  // Dirty mark on input changes + CO2 auto-update
-  Object.values(form).forEach(el=>{
-    if(!el) return;
-    const handler = ()=>{ if(state.editingId) state.dirty = true; updateCO2(); };
-    el.addEventListener('input', handler);
-    el.addEventListener('change', handler);
-  });
-
-  // Buttons
-  document.getElementById('addBtn').addEventListener('click', addRecord);
-  document.getElementById('clearBtn').addEventListener('click', ()=>{ if(confirm('Clear the form?')) clearForm(); });
-  document.getElementById('saveChangesBtn').addEventListener('click', saveChanges);
-  document.getElementById('cancelEditBtn').addEventListener('click', exitEdit);
-
-  // Generate code
-  document.getElementById('genCodeBtn').addEventListener('click', ()=>{
-    form.fabricCode.value = generateFabricCode();
-    if(state.editingId) state.dirty = true;
-  });
-  form.fabricCode.addEventListener('input', ()=>{
-    form.fabricCode.value = form.fabricCode.value.toUpperCase();
-    if(state.editingId) state.dirty = true;
-  });
-
-  // CSV buttons
-  document.getElementById('exportCsvBtn').addEventListener('click', downloadCSV);
-  document.getElementById('importCsvBtn').addEventListener('click', ()=>{
-    const input = document.createElement('input');
-    input.type='file'; input.accept='.csv';
-    input.onchange = (e)=>{ const f=e.target.files[0]; if(f) importCSVFile(f); };
-    input.click();
-  });
-  document.getElementById('templateCsvBtn').addEventListener('click', downloadCSVTemplate);
-
-  // bootstrap
-  loadDB();
-  if(state.rows.length===0){
-    state.rows = [
-      {id:crypto.randomUUID(), country:'Türkiye', productionFacility:'Rabateks Main Factory', po:'PO-12001', style:'NOVA-POLO', productType:'Polo shirt', fabricType:'Knit', fabricConstruction:'Pique Knit', fabricWeight:220, qty:1800, steps:['Cutting','Sewing','Quality Control','Packing'], co2:0},
-      {id:crypto.randomUUID(), country:'Germany', productionFacility:'Partner Factory A', po:'PO-12002', style:'ALTA-JNS', productType:'Slim jeans', fabricType:'Denim', fabricConstruction:'Denim', fabricWeight:420, qty:950, steps:['Cutting','Sewing','Washing','Finishing','Packing'], co2:0}
-    ];
-    state.rows = state.rows.map(r=>{
-      r.co2 = calcCO2TotalKg({productType:r.productType,fabricType:r.fabricType,gsm:r.fabricWeight,qty:r.qty});
-      return r;
-    });
-    saveDB();
-  }
-  updateCO2();
-  render();
-})();
-</script>
-</body>
-</html>
+function generateFabricCode(fabricType, weight) {
+  const prefixes = { 
+    'Cotton': 'CT', 'Knit': 'KN', 'Woven': 'WV', 'Denim': 'DN', 
+    'Polyester': 'PL', 'Wool': 'WL', 'Linen': 'LN', 'Silk': 'SK', 
+    'Spandex': 'SP', 'Rayon': 'RY' 
+  };
+  const prefix = prefixes[fabricType] || 'XX';
+  const suffix = Math.random().toString(36).substr(2, 2).toUpperCase();
+  return `${suffix}-${weight || 180}-${prefix}`;
+}
