@@ -8,5 +8,88 @@
 </head>
 <body>
     <p>If you are not redirected automatically, <a href="RabateksDPP.html">click here</a>.</p>
+<script>
+// Push Orders functionality
+function pushOrders() {
+  try {
+    // Check if RandomOrderCreator data exists in localStorage
+    const ordersData = localStorage.getItem('randomOrdersDatabase');
+    
+    if (!ordersData) {
+      alert('No orders found! Please generate orders in RandomOrderCreator first.');
+      window.open('RandomOrderCreator.html', '_blank');
+      return;
+    }
+    
+    const orders = JSON.parse(ordersData);
+    
+    if (orders.length === 0) {
+      alert('No orders to export! Please generate orders in RandomOrderCreator first.');
+      window.open('RandomOrderCreator.html', '_blank');
+      return;
+    }
+    
+    // Export orders as CSV
+    exportOrdersToCSV(orders);
+    
+    // Show success message
+    alert(`Successfully exported ${orders.length} orders!`);
+    
+  } catch (error) {
+    console.error('Error pushing orders:', error);
+    alert('Error exporting orders. Please try again.');
+  }
+}
+
+// Function to export orders to CSV
+function exportOrdersToCSV(orders) {
+  const headers = [
+    'ID', 'Country', 'Facility', 'PO Number', 'Style Name', 'Product Type',
+    'Fabric Type', 'Fabric Name', 'Fabric Construction', 'Fabric Weight (gsm)',
+    'Quantity', 'Created Date'
+  ];
+  
+  const csvContent = [
+    headers.join(','),
+    ...orders.map(order => [
+      order.id || '',
+      `"${order.country || ''}"`,
+      `"${order.facility || ''}"`,
+      `"${order.poNumber || ''}"`,
+      `"${order.styleName || ''}"`,
+      `"${order.productType || ''}"`,
+      `"${order.fabricType || ''}"`,
+      `"${order.fabricName || ''}"`,
+      `"${order.fabricConstruction || ''}"`,
+      order.fabricWeight || '',
+      order.quantity || '',
+      `"${order.createdDate || ''}"`
+    ].join(','))
+  ].join('\n');
+  
+  // Create and download CSV file
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', `exported_orders_${new Date().toISOString().split('T')[0]}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+</script>
 </body>
 </html>
+<!-- Find and replace the existing GarmentDPP button section -->
+<div class="button-group" style="display: flex; gap: 12px; align-items: center; margin: 20px 0;">
+  <!-- NEW: Push Orders Button (on the left) -->
+  <button class="btn" id="pushOrdersBtn" onclick="pushOrders()" style="background: #f9ba00; color: #02154e; border: 1px solid #f9ba00; padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+    📤 Push Orders
+  </button>
+  
+  <!-- Existing GarmentDPP Button -->
+  <a href="GarmentDPP.html" class="btn primary" style="background: #02154e; color: white; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+    🚀 Open Garment DPP
+  </a>
+</div>
