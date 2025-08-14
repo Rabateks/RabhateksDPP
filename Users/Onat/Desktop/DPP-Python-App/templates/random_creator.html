@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Random Order Creator - Rabateks DPP{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-dice me-2"></i>Random Order Creator</h1>
+            <a href="{{ url_for('orders.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Orders
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-magic me-2"></i>Generate Random Orders</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">
+                    This tool generates random orders with realistic data for testing purposes. 
+                    Perfect for populating your database with sample data.
+                </p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Number of Orders to Generate</label>
+                            <input type="number" id="orderCount" class="form-control" value="10" min="1" max="50">
+                            <small class="text-muted">Maximum 50 orders at once</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Generation Speed</label>
+                            <select id="generationSpeed" class="form-control">
+                                <option value="fast">Fast (Instant)</option>
+                                <option value="medium">Medium (1 per second)</option>
+                                <option value="slow">Slow (1 per 2 seconds)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mb-4">
+                    <button id="generateBtn" class="btn btn-success btn-lg" onclick="generateRandomOrders()">
+                        <i class="fas fa-dice me-2"></i>Generate Random Orders
+                    </button>
+                </div>
+                
+                <div id="progressContainer" class="d-none">
+                    <div class="mb-2">
+                        <strong>Generation Progress:</strong>
+                        <span id="progressText">0 / 0</span>
+                    </div>
+                    <div class="progress mb-3">
+                        <div id="progressBar" class="progress-bar bg-success" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div id="resultContainer" class="d-none">
+                    <div class="alert alert-success">
+                        <h6><i class="fas fa-check-circle me-2"></i>Generation Complete!</h6>
+                        <p class="mb-2">Successfully generated <span id="generatedCount">0</span> random orders.</p>
+                        <a href="{{ url_for('orders.index') }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-eye me-1"></i>View Orders
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sample Data Preview -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Sample Data Preview</h6>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">Generated orders will include random data from these categories:</p>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6>Countries:</h6>
+                        <ul class="list-unstyled small">
+                            <li>🇹🇷 Turkey</li>
+                            <li>🇧🇩 Bangladesh</li>
+                            <li>🇻🇳 Vietnam</li>
+                            <li>🇨🇳 China</li>
+                            <li>🇮🇳 India</li>
+                            <li>🇵🇰 Pakistan</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Product Types:</h6>
+                        <ul class="list-unstyled small">
+                            <li>👕 T-Shirt</li>
+                            <li>👔 Polo Shirt</li>
+                            <li>👗 Dress Shirt</li>
+                            <li>👚 Casual Shirt</li>
+                            <li>👘 Blouse</li>
+                            <li>🎽 Tank Top</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Fabric Types:</h6>
+                        <ul class="list-unstyled small">
+                            <li>🌱 Cotton</li>
+                            <li>🧵 Polyester</li>
+                            <li>🌿 Cotton Blend</li>
+                            <li>🌾 Linen</li>
+                            <li>✨ Viscose</li>
+                            <li>🎋 Modal</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let isGenerating = false;
+
+function generateRandomOrders() {
+    if (isGenerating) return;
+    
+    const count = parseInt(document.getElementById('orderCount').value);
+    const speed = document.getElementById('generationSpeed').value;
+    
+    if (count < 1 || count > 50) {
+        alert('Please enter a number between 1 and 50');
+        return;
+    }
+    
+    isGenerating = true;
+    document.getElementById('generateBtn').disabled = true;
+    document.getElementById('progressContainer').classList.remove('d-none');
+    document.getElementById('resultContainer').classList.add('d-none');
+    
+    if (speed === 'fast') {
+        generateBatch(count);
+    } else {
+        generateSequential(count, speed === 'medium' ? 1000 : 2000);
+    }
+}
+
+function generateBatch(count) {
+    fetch('/orders/api/orders/random', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ count: count })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updateProgress(count, count);
+            showResult(count);
+        } else {
+            alert('Error: ' + data.message);
+        }
+        resetGeneration();
+    })
+    .catch(error => {
+        alert('Error: ' + error);
+        resetGeneration();
+    });
+}
+
+function generateSequential(totalCount, delay) {
+    let generated = 0;
+    
+    function generateNext() {
+        if (generated >= totalCount) {
+            showResult(totalCount);
+            resetGeneration();
+            return;
+        }
+        
+        fetch('/orders/api/orders/random', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ count: 1 })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                generated++;
+                updateProgress(generated, totalCount);
+                setTimeout(generateNext, delay);
+            } else {
+                alert('Error: ' + data.message);
+                resetGeneration();
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error);
+            resetGeneration();
+        });
+    }
+    
+    generateNext();
+}
+
+function updateProgress(current, total) {
+    const percentage = (current / total) * 100;
+    document.getElementById('progressText').textContent = `${current} / ${total}`;
+    document.getElementById('progressBar').style.width = `${percentage}%`;
+}
+
+function showResult(count) {
+    document.getElementById('generatedCount').textContent = count;
+    document.getElementById('resultContainer').classList.remove('d-none');
+}
+
+function resetGeneration() {
+    isGenerating = false;
+    document.getElementById('generateBtn').disabled = false;
+    setTimeout(() => {
+        document.getElementById('progressContainer').classList.add('d-none');
+    }, 2000);
+}
+</script>
+{% endblock %}
